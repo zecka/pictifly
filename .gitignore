@@ -1,0 +1,14 @@
+.DS_Store
+.phpintel
+.phpintel/
+vendor
+vendor/
+vendor/*
+.DS_Store
+.data
+!.data/scripts
+./vendor
+db/
+**/**/wp-content/uploads
+plugins/akismet
+plugins/hello.php

@@ -1,0 +1,56 @@
+.pf_picture,
+.pf_lazy{
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    display: block;
+}
+.pf_lazy img{
+    filter: blur(5px) grayscale(20%);
+    transform: scale(1.09);
+}
+.pf_lazy--transition img{
+    transition: all .5s;
+}
+.pf_lazy .lazyloaded{
+    filter: blur(0) grayscale(0%);
+    transform: none;
+}
+.pf_background .pf_lazy .lazyloaded{
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+[op-background]{
+    position: relative;
+    z-index: 2;
+}
+.pf_background{
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    overflow: hidden;
+}
+.pf_background img{
+    /* https://stackoverflow.com/a/30778810/2838586 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    max-height: none;
+    max-width: none;
+  
+    height: auto;
+    width: calc(100% + 2px);
+  
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+.pf_background img.pf_heightbased{
+    width: auto;
+    height: calc(100% + 2px);
+}

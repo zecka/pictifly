@@ -1,0 +1,35 @@
+.pf_keypoint_figure{
+    border: 2px solid blue;
+    max-width: 500px;
+    position: relative;
+}
+.pf_keypoint_figure img{
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.pf_keypoint{
+    display: block;
+    width: 14px;
+    height: 14px;
+    background: rgba(255, 0, 0, .6);
+    border: 1px solid white;
+    border-radius: 20px;
+    position: absolute;
+    transform: translate(-50%,-50%);
+}
+.pf_keypoint_wrapper--lock{
+    position: relative;
+}
+.pf_keypoint_wrapper--lock::before{
+    content:"\0020";
+    display: block;
+    background-color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: .5;
+    z-index: 3;
+}
