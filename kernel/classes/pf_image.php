@@ -132,23 +132,31 @@ class PF_Image{
     }
 
     public function get(){
-        if( ($this->pathinfo['extension'] !== 'svg') ){
-            foreach($this->args['breakpoints'] as $title=>$dimensions){
-                if($dimensions!==false){
-                    $breakpoint = new PF_Breakpoint($this, $dimensions);
-                    $this->render_array['breakpoints'][$title] = $breakpoint->get();
+        try {
+            //code...
+      
+            if( ($this->pathinfo['extension'] !== 'svg') ){
+                foreach($this->args['breakpoints'] as $title=>$dimensions){
+                    if($dimensions!==false){
+                        $breakpoint = new PF_Breakpoint($this, $dimensions);
+                        $this->render_array['breakpoints'][$title] = $breakpoint->get();
+                    }
                 }
+            }else{
+                if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
+                    copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
+                }
+                $this->render_array['breakpoints']['xs']['1x'] = $this->pathinfo['basename'];
             }
-        }else{
-            if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
-                copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
-            }
-            $this->render_array['breakpoints']['xs']['1x'] = $this->pathinfo['basename'];
+            
+            $this->render_array['mime'] = $this->mime_type;
+            
+            return $this->render_array;
+        
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo 'The id of image probably not exist';
         }
-        
-        $this->render_array['mime'] = $this->mime_type;
-        
-        return $this->render_array;
     }
     public function get_simple(){
         $picture =  $this->get();

@@ -50,7 +50,7 @@ if(! function_exists('pf_display_simple')){
             <img class="lazyload" src="<?php echo $small; ?>" data-src="<?php echo $img; ?>" />
         </figure>
         <?php }else{ ?>
-            <img src="<?php echo $configs['resize_url'].$img; ?>" />
+            <img src="<?php echo $img; ?>" />
         <?php }
     }
 }
