@@ -17,6 +17,7 @@ define( 'PF_PATH', substr(plugin_dir_path( __FILE__ ), 0, -1) );
 
 require 'vendor/autoload.php';
 
+require('kernel/pf_sizes_store.php');
 require('kernel/classes/pf_image.php');
 require('kernel/classes/pf_breakpoint.php');
 require('kernel/classes/pf_size.php');

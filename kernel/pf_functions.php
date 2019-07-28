@@ -54,3 +54,50 @@ if(! function_exists('pf_display_simple')){
         <?php }
     }
 }
+function pf_default_attach($attach){
+    $attach_default=[
+        'post_type' => array(),
+        'taxonomy' => array()
+    ];
+    return array_replace_recursive($attach_default, $attach);
+}
+
+
+function pf_img($id, $size_name, $echo = false){
+
+    $size = pf_get_size($size_name);
+    if(!$size){
+       return "the following image size doesn't exist: ".$size_name;
+    }
+    
+    ob_start();
+    if($size['simple']){
+        pf_display_simple($id, $size['data'][0], $size['data'][1], $size['data'][2]);
+    }else{
+        echo pf_display($id, $size['data']);
+    }
+    $img = ob_get_clean();
+
+    if($echo){
+       echo $img;
+    }else{
+        return $img;
+    }
+    
+}
+
+function pf_simple_url($id, $size_name, $echo = false){
+    $size = pf_get_size($size_name);
+    if(!$size){
+       return "the following image size doesn't exist: ".$size_name;
+    }elseif(!$size['simple']){
+        return "Can only get url of simple size ".$size_name;
+    }
+    $url = pf_get_simple($id, $size['data'][0], $size['data'][1], $size['data'][2]);
+    if($echo){
+        echo $url;
+    }else{
+        return $url;
+    }
+}
+
