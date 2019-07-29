@@ -93,8 +93,12 @@ function pf_ajax_item_image_regenerate(){
 				$_pf_regenerated_imgs[] = pf_img($image_id, $size_name, false);
 			}
 		}
+		$image_before = $_pf_regenerated_imgs;
 		do_action('pf_post_images_regenerate', $id, $post_type);
 		global $_pf_regenerated_imgs;
+		if(!$_pf_regenerated_imgs){
+			$_pf_regenerated_imgs = $image_before;
+		}
 		wp_send_json_success(["images"=>$_pf_regenerated_imgs]);
 	} catch (Exception $e) {
 		$msg = 'Exception : '.  $e->getMessage();

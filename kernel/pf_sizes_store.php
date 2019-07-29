@@ -32,3 +32,9 @@ function pf_get_size($name)
 	$sizes = pf_get_all_sizes();
 	return isset($sizes[$name]) ? $sizes[$name] : false;
 }
+
+function pf_get_size_args($name)
+{
+	$sizes = pf_get_all_sizes();
+	return isset($sizes[$name]['data']) ? $sizes[$name]['data'] : false;
+}
