@@ -32,6 +32,9 @@ Le plugin vérifie l'existence d'une taille d'image, si celle-ci n'existe pas la
   - [6.1. Comment modifier une configuration par default](#61-comment-modifier-une-configuration-par-default)
 - [7. LazyLoad](#7-lazyload)
   - [7.1. Comment Désactiver LazyLoad](#71-comment-désactiver-lazyload)
+- [8. Regeneration d'image en backoffice](#8-regeneration-dimage-en-backoffice)
+  - [8.1 Attacher des post types à la régénération](#81-attacher-des-post-types-à-la-régénération)
+  - [8.2 Créer une méthode de regénération personnalisée](#82-créer-une-méthode-de-regénération-personnalisée)
 
 <!-- /TOC -->
 
@@ -99,7 +102,7 @@ pf_register('recipe', $args, $attach);
 
 `$args (array)` Voir [Args](#4-args)
 
-`$attach (array)` Attacher la taille d'image à un post type
+`$attach (array)` Attacher la taille d'image à un post type, l'image à la une sera regénérée à cette taille lors de la Régénération
 
 ## 3.2 pf_register_simple()
 
@@ -394,3 +397,42 @@ Nous utilisons LazySize, plus d'infos: [https://github.com/aFarkas/lazysizes](ht
 ## 7.1. Comment Désactiver LazyLoad
 
 Voir [comment modifier une configuration par default](#comment-modifier-une-configuration-par-default)
+
+# 8. Regeneration d'image en backoffice
+
+Par default pictifly regénère les images à la une des post type attaché à une taille d'image.  
+Vous pouvez également ajouter d'autres image lors de cette régénération
+
+## 8.1 Attacher des post types à la régénération
+
+```php
+add_filter('pf_post_type_regenerate', 'prefix_pf_post_type_regenerate', 1, 1);
+function prefix_pf_post_type_regenerate($post_types){
+    $post_types=['custom_type'];
+    return $post_types;
+}
+```
+
+## 8.2 Créer une méthode de regénération personnalisée
+
+```php
+add_action('pf_post_images_regenerate', 'prefix_pf_post_images_regenerate',10, 2);
+function prefix_pf_post_images_regenerate($post_id, $post_type){
+    global $_pf_regenerated_imgs;
+    if($post_type=="custom_type"){
+        $thumb_id = get_post_thumbnail_id($post_id);
+        if($thumb_id){
+            $_pf_regenerated_imgs[] = pf_get_simple($thumb_id, 200, 200, true);
+        }
+        $images = get_field('images', $post_id);
+        if($images){
+            foreach($images as $image){
+                $_pf_regenerated_imgs[] = pf_img($image, "custom_size", false);
+                $_pf_regenerated_imgs[] = pf_get_simple($image, 200, 200, true);
+                $_pf_regenerated_imgs[] = pf_get_simple($image, 400, 400, true);
+                $_pf_regenerated_imgs[] = pf_get_simple($image, 600, 600, true);
+            }
+        }
+    }
+}
+```
