@@ -40,24 +40,31 @@ function pf_options_page(){
 			font-weight: bold;
 		}
 	</style>
-	<div class="pf_option_page">
-		<h1>Pictifly regenerate images</h1>
 		<?php if(empty($post_types)){ ?>
+			<div class="pf_option_page">
+				<h1>Pictifly regenerate images</h1>
+			</div>
 			<div class="notice-error notice">
-				You need to define your regenerate function first
+				<h2>You need to define your regenerates functions first</h2>
+			</div>
+			<div class="pf_option_page">
+				<h2>Example of pictifly regeneration function</h2>
+				<script src="https://gist.github.com/zecka/93d11cd384b6d7d6ca1f846e7c06c9da.js"></script>
 			</div>
 		<?php }else{ ?>
-			<button class="button" data-nonce="<?php echo wp_create_nonce('pf_regenerate'); ?>">Regenerate</button>
-			<div class="pf_progress_count">
-				<div class="pf_progress_nbpost"><span class="value">0</span> posts regenerate</div>
-				<div class="pf_progress_nbimage"><span class="value">0</span> image sizes regenerate</div>
-			</div>
-			<div class="pf_progress">
-				<div class="pf_progress_statut"></div>
-				<div class="pf_progress_percent">Not started</div>
+			<div class="pf_option_page">
+				<h1>Pictifly regenerate images</h1>
+				<button class="button" data-nonce="<?php echo wp_create_nonce('pf_regenerate'); ?>">Regenerate</button>
+				<div class="pf_progress_count">
+					<div class="pf_progress_nbpost"><span class="value">0</span> posts regenerate</div>
+					<div class="pf_progress_nbimage"><span class="value">0</span> image sizes regenerate</div>
+				</div>
+				<div class="pf_progress">
+					<div class="pf_progress_statut"></div>
+					<div class="pf_progress_percent">Not started</div>
+				</div>
 			</div>
 		<?php } ?>
-	</div>
 	<?php
 }
 
