@@ -58,7 +58,7 @@ $args = [
 ];
 $attach = [
   'post_type' => ['recipe'],
-]
+];
 pf_register('recipe', $args, $attach);
 
 
@@ -75,9 +75,9 @@ pf_register_simple('recipe-simple', 100, 100, true, $attach);
 
 ```php
 // get picture tag
-$image = pf_img($image_id, 'recipe-simple', false)
+$image = pf_img($image_id, 'recipe-simple', false);
 // display picture tag
-pf_img($image_id, 'recipe-simple', true)
+pf_img($image_id, 'recipe-simple', true);
 
 // get only url (Work only with simple size)
 $url = pf_simple_url($image_id, 'recipe-simple');
