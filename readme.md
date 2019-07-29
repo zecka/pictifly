@@ -10,6 +10,9 @@
 
 # Presentation
 
+A plugin to generate different image sizes and return them in a `<picture>` tag with different breakpoints and screen resolution.
+The plugin checks the existence of an image size, if it does not exist, generates it and saves it.
+
 ## Features
 
 - Keypoint resize
@@ -99,4 +102,4 @@ function pf_configs_filters($default){
 
 # Next Step
 
-[View full doc here (in french)](documentations/readme.md)
+[View full doc here (in french)](documentation/readme.md)
