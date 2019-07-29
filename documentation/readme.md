@@ -227,7 +227,7 @@ Array
 
 `$image (int)` ID de l'image dans wordpress
 
-`$args (array)` Voir [section Args](#args)
+`$args (array)` Voir [section Args](#4-args)
 
 ### 3.7.2. Retour (string)
 
