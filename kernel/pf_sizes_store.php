@@ -1,6 +1,6 @@
 <?php
 $_pf_image_sizes = array();
-function pf_register($name, $args, $attach)
+function pf_register($name, $args, $attach = array())
 {
 	global $_pf_image_sizes;
 	$attach = pf_default_attach($attach);
