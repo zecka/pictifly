@@ -45,7 +45,12 @@ function pf_options_page(){
 				<h1>Pictifly regenerate images</h1>
 			</div>
 			<div class="notice-error notice">
-				<h2>You need to define your regenerates functions first</h2>
+				<h2>
+					You need to define your regenerates functions first
+					<a href="https://github.com/zecka/pictifly/blob/master/documentation/readme.md" target="_blank">
+						Read documentation
+					</a>
+				</h2>
 			</div>
 			<div class="pf_option_page">
 				<h2>Example of pictifly regeneration function</h2>
