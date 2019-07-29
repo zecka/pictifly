@@ -109,7 +109,9 @@
       });
     }
     progressBar() {
-      const percent = (this.nbpost / this.totalpost) * 100;
+      let percent = (this.nbpost / this.totalpost) * 100;
+      // Round percent 2 decimal
+      percent = Math.round(percent * 100) / 100;
       $(".pf_progress_statut").width(percent + "%");
       $(".pf_progress_nbimage .value").html(this.nbimage);
       $(".pf_progress_nbpost .value").html(this.nbpost);
