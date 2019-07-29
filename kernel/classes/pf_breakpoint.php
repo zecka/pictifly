@@ -14,8 +14,8 @@ class PF_Breakpoint{
     public $crop; // boolean
     public $x_crop; // int X axis of top left corner for crop (from original image size)
     public $y_crop; // int Y axis of top left corner for crop (from original image size)
-    private $size_array; // array 
-    
+    private $size_array; // array
+
     public function __construct($image, $dimensions){
         $this->image = $image;
         $this->dimensions = $dimensions;
@@ -38,12 +38,12 @@ class PF_Breakpoint{
             $this->width  = $this->dimensions[0];
             $this->height = $this->dimensions[1];
             if($this->height == null){
-                $this->height = $this->width * $this->ratio;  
+                $this->height = $this->width * $this->ratio;
             }elseif($this->width == null){
                 $this->width = $this->height / $this->ratio;
             }else{
                 if($this->ratio > $this->image->ratio){
-                    $this->height = $this->dimensions[1];	
+                    $this->height = $this->dimensions[1];
                     $this->width = $this->height / $this->ratio;
                 }else{
                     $this->width = $this->dimensions[0];
@@ -53,32 +53,32 @@ class PF_Breakpoint{
         }else{
             $this->width  = $this->dimensions;
             $this->height = $this->width * $this->ratio;
-        } 
-       
+        }
+
     }
     private function define_dimension(){
         // here define width, height and based on
 
         // first check if dimenstion is set with an array or not
         if(is_array($this->dimensions)){
- 
+
 
             $this->crop = (isset($this->dimensions[2])) ? $this->dimensions[2] : $this->image->args['crop'];
-            
-            
-            
+
+
+
             if(!$this->crop){
                 if($this->ratio > $this->image->ratio){
-                    $this->height = $this->dimensions[1];	
+                    $this->height = $this->dimensions[1];
                     $this->width = $this->height / $this->image->tratio;
                 }else{
                     $this->width = $this->dimensions[0];
                     $this->height = $this->width * $this->image->ratio;
                 }
-                
+
             }else{
                 $this->width  = $this->dimensions[0];
-                $this->height = $this->dimensions[1]; 
+                $this->height = $this->dimensions[1];
             }
 
             if($this->height === null){
@@ -101,20 +101,11 @@ class PF_Breakpoint{
 
     /**
      * Define base crop position
-     * If 
+     * If
      */
     private function define_crop_position(){
         if(!$this->image->keypoint){
-            // Check if breakpoint have specific crop position defined
-            if(is_array($this->dimensions) && isset($this->dimensions[2])){
-                $this->position=$this->dimensions[2];
-            }else{
-                // this breakpoint haven't any crop position defined
-                // So we take the default crop position
-                $this->position=$this->image->args['position'];
-            }
-
-            $this->position_name=($this->position!=='center') ? '-'.$this->position : ''; 
+             $this->position_name= '';
         }else{
             $x = (int) $this->image->keypoint[0];
             $y = (int) $this->image->keypoint[1];
@@ -147,11 +138,11 @@ class PF_Breakpoint{
         }else{
             $this->width_crop = $this->image->width;
             $this->height_crop = $this->image->width * $crop_ratio;
-        } 
+        }
 
         // DECREASE HEIGHT CROP IF BIGGER THANT IMAGE
         if($this->height_crop > $this->image->height){
-            
+
             $decrease = $this->height_crop - $this->image->height;
             $percent_decrease = $decrease /$this->height_crop * 100;
 
@@ -167,19 +158,19 @@ class PF_Breakpoint{
         if($this->width_crop > $this->image->width){
             $decrease = $this->width_crop - $this->image->width;
             $percent_decrease = $decrease / $this->width_crop * 100;
-        
+
             // define height crop as height image and adapte width
             $this->width_crop =  $this->image->width;
 
             $decrease_height = ($this->height_crop / 100) * $percent_decrease;
             $this->height_crop = $this->height_crop - $decrease_height;
         }
-        
-       
+
+
         $this->width_crop = (int) ($this->width_crop);
         $this->height_crop = (int) ($this->height_crop);
-        
-      
+
+
     }
     /**
      * We need to defined crop coordinate from the keypoint of image
@@ -188,16 +179,16 @@ class PF_Breakpoint{
      * from crop center we need to find crop top left corner
      */
     private function define_crop_coordinate(){
-   
+
         $x_percent = $this->image->keypoint[0];
         $y_percent = $this->image->keypoint[1];
         $x_center = $this->image->width / 100 * $x_percent;
         $y_center = $this->image->height / 100 * $y_percent;
-       
+
         $x = $x_center - ($this->width_crop / 2);
         $y = $y_center - ($this->height_crop / 2);
 
-        
+
         if($x < 0){
             $x = 0;
         }else if($x + $this->width_crop > $this->image->width){
