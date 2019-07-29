@@ -4,8 +4,8 @@ class PF_Image{
     public $source_file;
     public $width;
     public $height;
-    public $ratio; 
-    public $target_ratio; 
+    public $ratio;
+    public $target_ratio;
     public $pathinfo;
     public $title;
     public $alt;
@@ -20,14 +20,14 @@ class PF_Image{
     private $render_array;
     private $is_svg;
 
-    
+
     public function __construct($id, $args){
         $args_default=$this->default_args();
         $args=array_replace_recursive($args_default, $args);
         $this->configs = pf_configs();
         $this->args = $args;
         $this->id = $id;
-        $this->source_file = get_attached_file( $id ); 
+        $this->source_file = get_attached_file( $id );
         $this->pathinfo = pathinfo($this->source_file);
         $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
         $this->resize_date_folder = $this->configs['resize_path'].$this->date_folder;
@@ -45,7 +45,7 @@ class PF_Image{
             $this->calcule_target_ratio();
             $this->define_attribute();
             $this->define_retina();
-            
+
         }else{
             $this->is_svg = true;
         }
@@ -56,7 +56,6 @@ class PF_Image{
     private function default_args(){
         $default_args =  array(
             'crop'	=> true,
-            'position' => 'center', // CROP POSITION top-left top top-right left center (default) right bottom-left bottom bottom-right
             'breakpoints'=> array(
                 'xs'	=> false,	// width on xs screen  (default: false)
                 'sm'	=> false,	// width on sm screen  (default: false)
@@ -75,7 +74,7 @@ class PF_Image{
             'alt'	=> true,
             'class'	=> ''
         );
-    
+
         if(function_exists('apply_filters')){
             return apply_filters( 'pf_default_args', $default_args );
         }else{
@@ -110,10 +109,10 @@ class PF_Image{
     }
 
     private function define_keypoint(){
-        
+
         $left_value = get_post_meta( $this->id, 'pf_keypoint_left', true );
         $left_value = $left_value ? $left_value : false;
-		
+
 		$top_value = get_post_meta( $this->id, 'pf_keypoint_top', true );
         $top_value = $top_value ? $top_value : false;
 
@@ -122,7 +121,7 @@ class PF_Image{
         }else{
             $this->keypoint = array(50,50);
         }
-        
+
     }
     public function browser_support_webp(){
         if( strpos( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false ||  strpos( $_SERVER['HTTP_USER_AGENT'], ' Chrome/' ) !== false ) {
@@ -134,7 +133,7 @@ class PF_Image{
     public function get(){
         try {
             //code...
-      
+
             if( ($this->pathinfo['extension'] !== 'svg') ){
                 foreach($this->args['breakpoints'] as $title=>$dimensions){
                     if($dimensions!==false){
@@ -148,11 +147,11 @@ class PF_Image{
                 }
                 $this->render_array['breakpoints']['xs']['1x'] = $this->pathinfo['basename'];
             }
-            
+
             $this->render_array['mime'] = $this->mime_type;
-            
+
             return $this->render_array;
-        
+
         } catch (\Throwable $th) {
             //throw $th;
             echo 'The id of image probably not exist';
@@ -189,34 +188,34 @@ class PF_Image{
 
         // Prefix srcset with data- for lazyload
         $srcset_prefix = "";
-        if($this->configs['lazyload'] && $this->args['lazyload']){ 
+        if($this->configs['lazyload'] && $this->args['lazyload']){
             $srcset_prefix = "data-";
         }
 
         ob_start();
         ?>
-  
-        <figure class="<?php echo implode(" ", $figure_classes) ?>"> 
-      
+
+        <figure class="<?php echo implode(" ", $figure_classes) ?>">
+
             <picture><?php
-               
+
                 foreach($breakpoints as $bp){
                     if(!$this->is_svg):
                         ?>
-                        <source 
-                            <?php echo $srcset_prefix; ?>srcset="<?php echo implode(', ', $bp['srcset']); ?>" 
-                            media="(min-width: <?php echo $bp['min-width']; ?>px)"  
+                        <source
+                            <?php echo $srcset_prefix; ?>srcset="<?php echo implode(', ', $bp['srcset']); ?>"
+                            media="(min-width: <?php echo $bp['min-width']; ?>px)"
                             type="<?php echo $picture['mime'];  ?>">
                         <?php
                     endif;
                 }
 
-                
+
         ?>
-            
-                <img 
-                    <?php 
- 
+
+                <img
+                    <?php
+
                     if(isset($this->args['class']) && $this->args['class']!==''){
                         $this->args['class']= ' '.$this->args['class'];
                     }
@@ -228,8 +227,8 @@ class PF_Image{
                     }
                     if($this->configs['lazyload'] && $this->args['lazyload']){
                         ?>
-                        class="lazyload<?php echo $this->args['class']; ?>" 
-                        src="<?php echo $this->resize_date_url.pf_get_smaller_bp($picture['breakpoints'])['1x']; ?>" 
+                        class="lazyload<?php echo $this->args['class']; ?>"
+                        src="<?php echo $this->resize_date_url.pf_get_smaller_bp($picture['breakpoints'])['1x']; ?>"
                         data-src="<?php echo $this->resize_date_url.pf_get_bigger_bp($picture['breakpoints'])['1x']; ?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
@@ -238,7 +237,7 @@ class PF_Image{
                 >
             </picture>
         </figure>
-  
+
         <?php
         return ob_get_clean();
     }
@@ -246,9 +245,9 @@ class PF_Image{
     public function display(){
         echo $this->get_html();
     }
-   
+
     public function background(){
-        ob_start(); 
+        ob_start();
         $this->args['class']="pf_background_img";
         // Simulate background cover
         ?>
@@ -258,13 +257,13 @@ class PF_Image{
         </div
         <?php
         // We don't close the last tag.
-        // Remember we will insert this function inside another tag 
+        // Remember we will insert this function inside another tag
         // so there will be a ">" that basically closes our tag
         return ob_get_clean();
     }
 
-    
 
-    
-  
+
+
+
 }
