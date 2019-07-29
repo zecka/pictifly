@@ -58,14 +58,7 @@
           type: "post",
           url: myAjax.ajaxurl,
           data: data,
-          beforeSend: function(response) {
-            console.log("before_send");
-          },
-          complete: function(response) {
-            console.log("complete");
-          },
           success: response => {
-            console.log("response", response);
             this.totalpost = response.data.length;
             this.regenerateItems(response.data);
           }
@@ -73,7 +66,6 @@
       });
     }
     regenerateItems(items) {
-      console.log("items", items);
       let p = $.when();
 
       items.map(item => {
@@ -94,16 +86,10 @@
         type: "post",
         url: myAjax.ajaxurl,
         data: data,
-        beforeSend: function(response) {
-          console.log("before_send");
-        },
-        complete: function(response) {
-          console.log("complete");
-        },
         success: response => {
           this.nbpost = this.nbpost + 1;
           this.progressBar();
-          console.log("lastresponse", response);
+          console.log("response", response);
           this.nbimage += response.data.images.length;
         }
       });
