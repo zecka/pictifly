@@ -56,7 +56,7 @@ if(! function_exists('pf_simple_url')){
 
 if(! function_exists('pf_img_background')){
 	function pf_img_background($id, $size_name, $args = array() ){
-		$picture = pf_get($id, 'banner', $args);
+		$picture = pf_get($id, $size_name, $args);
 		return $picture->background();
 	}
 }
