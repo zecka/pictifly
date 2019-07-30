@@ -122,12 +122,13 @@ pf_register_simple('recipe-simple', 100, 100, true, $attach);
 ## 3.3 pf_img()
 
 ```php
- pf_img($image_id, $size_name, $echo = false);
+ pf_img($image_id, $size_name, $echo = false, $args=array());
 ```
 
 `$image_id (int)` ID de l'image dans wordpress  
 `$size_name (string)` Nom de la taille d'image  
 `$echo (bool)` Afficher le retour
+`$args (bool)` Argument additionnel (alt, title). Ici ne sont pas pris en compte les argument en rapport à la taille de l'image Voir [section Args](#4-args)
 
 ## 3.4 pf_simple_url()
 

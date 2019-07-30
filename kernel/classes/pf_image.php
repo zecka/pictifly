@@ -224,6 +224,8 @@ class PF_Image{
                     }
                     if($this->alt){
                         echo 'alt="'.$this->alt.'" ';
+                    }else{
+                        echo 'alt="'.$this->title.'" ';
                     }
                     if(isset($this->title)){
                         echo 'title="'.$this->title.'" ';
@@ -247,6 +249,18 @@ class PF_Image{
 
     public function display(){
         echo $this->get_html();
+    }
+
+    public function attributes(){
+        $attributes = "";
+        if($this->title){
+            $attributes.=' title="'.$this->title.'"';
+        }
+
+        if($this->alt){
+            $attributes.=' alt="'.$this->alt.'"';
+        }
+        return $attributes;
     }
 
     public function background(){
