@@ -22,6 +22,9 @@ class PF_Image{
 
 
     public function __construct($id, $args){
+        if(!$id){
+            return false;
+        }
         $args_default=$this->default_args();
         $args=array_replace_recursive($args_default, $args);
         $this->configs = pf_configs();
@@ -195,7 +198,7 @@ class PF_Image{
         ob_start();
         ?>
 
-        <figure class="<?php echo implode(" ", $figure_classes) ?>">
+        <span class="<?php echo implode(" ", $figure_classes) ?>">
 
             <picture><?php
 
@@ -236,7 +239,7 @@ class PF_Image{
                     <?php } ?>
                 >
             </picture>
-        </figure>
+        </span>
 
         <?php
         return ob_get_clean();
