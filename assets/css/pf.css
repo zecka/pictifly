@@ -48,6 +48,11 @@
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   -webkit-transform: translate(-50%, -50%);
+
+  opacity: 0;
+}
+.pf_background img.pf_is_load {
+  opacity: 1;
 }
 .pf_background img.pf_heightbased {
   width: auto;
