@@ -14,7 +14,7 @@ Le plugin vérifie l'existence d'une taille d'image, si celle-ci n'existe pas la
   - [3.5. pfgetsimple()](#35-pfgetsimple)
     - [3.5.1. Arguments](#351-arguments)
     - [3.5.2. Retour (string)](#352-retour-string)
-  - [3.6. pfget()](#36-pfget)
+  - [3.6. pfgetarray()](#36-pfgetarray)
     - [3.6.1. Arguments](#361-arguments)
     - [3.6.2. Retour (array)](#362-retour-array)
   - [3.7. pfdisplay()](#37-pfdisplay)
@@ -160,11 +160,11 @@ Retourne uniquement l'url d'une taille précise d'image
 
 Retourne l'url de l'image
 
-## 3.6. pf_get()
+## 3.6. pf_get_array()
 
 Génère les image et retourne le tableau
 
-`pf_get($image, $args=array())`
+`pf_get_array($image, $args=array())`
 
 ### 3.6.1. Arguments
 
