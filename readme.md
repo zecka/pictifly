@@ -1,3 +1,5 @@
+# Unstable for the moment, no guarantee of compatibility between the updates.
+
 - [Presentation](#presentation)
   - [Features](#features)
 - [Requirement](#requirement)
