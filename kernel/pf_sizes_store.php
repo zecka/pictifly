@@ -8,7 +8,7 @@ function pf_register($name, $args, $attach = array())
 		'simple'    => false,
 		'post_type' => $attach['post_type'],
 		'taxonomy' => $attach['taxonomy'],
-		'data' => $args,
+		'args' => $args,
 	];
 }
 function pf_register_simple($name, $width, $height = null, $crop = false, $attach = array())
@@ -18,7 +18,7 @@ function pf_register_simple($name, $width, $height = null, $crop = false, $attac
 	$_pf_image_sizes[$name] = [
 		'simple'    => true,
 		'post_type'    => $attach['post_type'],
-		'data' => [$width, $height, $crop],
+		'args' => [$width, $height, $crop],
 	];
 }
 function pf_get_all_sizes()
@@ -36,5 +36,5 @@ function pf_get_size($name)
 function pf_get_size_args($name)
 {
 	$sizes = pf_get_all_sizes();
-	return isset($sizes[$name]['data']) ? $sizes[$name]['data'] : false;
+	return isset($sizes[$name]['args']) ? $sizes[$name]['args'] : false;
 }

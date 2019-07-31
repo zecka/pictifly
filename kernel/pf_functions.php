@@ -20,7 +20,7 @@ if(!function_exists('pf_get')){
 				'retina' => false
 			);
 		}else{
-			$default_args = $size['data'];
+			$default_args = $size['args'];
 		}
 		$args = array_merge($default_args, $args);
 
@@ -45,7 +45,7 @@ if(! function_exists('pf_img')){
 
 if(! function_exists('pf_simple_url')){
 	function pf_simple_url($id, $size_name, $echo = false){
-		$picture = pf_get($id, $size_name, $args);
+		$picture = pf_get($id, $size_name);
 		if($echo){
 			echo $picture->get_simple();
 		}else{

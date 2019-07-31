@@ -26,38 +26,36 @@ class PF_Size{
         $this->define_dimensions();
         $this->define_file_name();
     }
-    
+
     private function define_dimensions(){
-        
+
 
         if($this->breakpoint->based_on=='width'){
             $this->width = (int) ( $this->breakpoint->width * $this->retina_x);
-            $this->height= (int) ( $this->width * $this->breakpoint->ratio );            
+            $this->height= (int) ( $this->width * $this->breakpoint->ratio );
         }elseif($this->breakpoint->based_on=="height"){
             $this->height = (int) ( $this->breakpoint->height * $this->retina_x );
             $this->width = (int) ( $this->height / $this->breakpoint->ratio );
         }else{
             $this->width = (int) ( $this->breakpoint->width * $this->retina_x);
             $this->height = (int) ( $this->breakpoint->height * $this->retina_x );
-        }  
-        
-        
+        }
 
         // prevent upscale
         if($this->width > $this->image->width){
             $this->width = $this->image->width;
-            $this->height= (int) ( $this->width * $this->breakpoint->ratio );  
+            $this->height= (int) ( $this->width * $this->breakpoint->ratio );
         }
         if($this->height > $this->image->height){
             $this->height = $this->image->height;
-            $this->width = (int) ( $this->height / $this->breakpoint->ratio );  
+            $this->width = (int) ( $this->height / $this->breakpoint->ratio );
         }
 
 
 
     }
 
-    
+
     private function define_file_name(){
         $file_name  = $this->image->pathinfo['filename'];
         $img_size   = '-'.$this->width.'x'.$this->height;
@@ -80,7 +78,7 @@ class PF_Size{
         // Convert to webp if enable
         if(!file_exists($this->image->resize_date_folder.$this->filename.'.webp') && $this->image->args['webp']){
             $this->convert_webp();
-            
+
         }elseif($this->image->args['webp']){
             $this->image->have_webp = true;
         }
@@ -90,9 +88,9 @@ class PF_Size{
             $this->image->mime_type = "image/webp";
         }
 
-        return $this->filename;    
+        return $this->filename;
     }
-    
+
     private function generate_img(){
         set_time_limit(0);
         $this->img = Image::make($this->image->source_file);
@@ -111,7 +109,7 @@ class PF_Size{
 		$this->img->crop(
             $this->breakpoint->width_crop,
             $this->breakpoint->height_crop,
-            $this->breakpoint->x_crop, 
+            $this->breakpoint->x_crop,
             $this->breakpoint->y_crop
         );
         $this->img->resize($this->width, $this->height, function ($constraint) {
@@ -120,6 +118,8 @@ class PF_Size{
 
     }
     private function fit_to_format(){
+
+
         $this->img->fit($this->width, $this->height, function ($constraint) {
             $constraint->upsize();
         }, $this->breakpoint->position);
@@ -134,9 +134,9 @@ class PF_Size{
 
     	$this->img->sharpen(3);
         $this->img->save(
-            $this->image->resize_date_folder.$this->filename, 
+            $this->image->resize_date_folder.$this->filename,
             $this->image->args['quality']
-        );       
+        );
     }
     private function convert_webp(){
         if($this->image->browser_support_webp()){
@@ -148,14 +148,14 @@ class PF_Size{
                 'quality' => 'auto',
                 'max-quality' => 90,
                 'converters' => [
-                    'cwebp', 
+                    'cwebp',
                     'imagick',
                     [
                         'converter' => 'gd',
-                        'options' => [            
+                        'options' => [
                             'skip-pngs' => false,
                         ],
-                    ], 
+                    ],
                 ],  // Specify conversion methods to use, and their order
                 // more options available! - see the api
             ]);
@@ -165,7 +165,7 @@ class PF_Size{
             $success = false;
         }
 
-        
+
     }
 
 }

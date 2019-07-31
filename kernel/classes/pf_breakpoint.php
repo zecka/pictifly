@@ -29,14 +29,14 @@ class PF_Breakpoint{
         if($this->image->keypoint){
             $this->define_crop_dimensions();
             $this->define_crop_coordinate();
-        }
+		}
         $this->generate();
     }
 
     private function define_dimension_with_ratio(){
         if(is_array($this->dimensions)){
             $this->width  = $this->dimensions[0];
-            $this->height = $this->dimensions[1];
+			$this->height = $this->dimensions[1];
             if($this->height == null){
                 $this->height = $this->width * $this->ratio;
             }elseif($this->width == null){
@@ -53,7 +53,7 @@ class PF_Breakpoint{
         }else{
             $this->width  = $this->dimensions;
             $this->height = $this->width * $this->ratio;
-        }
+		}
 
     }
     private function define_dimension(){

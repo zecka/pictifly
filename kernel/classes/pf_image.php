@@ -135,8 +135,6 @@ class PF_Image{
 
     public function get(){
         try {
-            //code...
-
             if( ($this->pathinfo['extension'] !== 'svg') ){
                 foreach($this->args['breakpoints'] as $title=>$dimensions){
                     if($dimensions!==false){
@@ -156,7 +154,7 @@ class PF_Image{
             return $this->render_array;
 
         } catch (\Throwable $th) {
-            //throw $th;
+		   //throw $th;
             echo 'The id of image probably not exist';
         }
     }
