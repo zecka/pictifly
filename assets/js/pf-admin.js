@@ -2,6 +2,7 @@
   class PFadmin {
     constructor() {
       this.init();
+      this.stopRegeneration = false;
     }
     init() {
       $(document).ready(() => {
@@ -44,10 +45,23 @@
       });
     }
     getItems() {
-      $(document).on("click", ".pf_option_page button", e => {
+      $(document).on("click", ".pf_option_page button.stop", e => {
+        this.stopRegeneration = true;
+        $(e.currentTarget).removeClass("stop");
+        $(e.currentTarget).addClass("start");
+        $(e.currentTarget).html("Restart");
+      });
+      $(document).on("click", ".pf_option_page button.start", e => {
+        this.stopRegeneration = false;
         this.totalpost = 0;
         this.nbpost = 0;
+        this.nbimage = 0;
         $(".pf_progress_percent").html("0%");
+        $(".pf_log_content").html("");
+
+        $(e.currentTarget).removeClass("start");
+        $(e.currentTarget).addClass("stop");
+        $(e.currentTarget).html("stop");
 
         const data = {
           action: "pf_ajax_regenerate_get_items",
@@ -75,9 +89,10 @@
           post_type: item.post_type,
           nonce: this.nonce
         };
-
         p = p.then(() => {
-          return this.regenerateItem(data);
+          if (!this.stopRegeneration) {
+            return this.regenerateItem(data);
+          }
         });
       });
     }
@@ -89,7 +104,13 @@
         success: response => {
           this.nbpost = this.nbpost + 1;
           this.progressBar();
-          console.log("response", response);
+          let log =
+            "<li> regenerated sizes for <b> " + response.data.post + "</b><ul>";
+          response.data.sizes.map(size => {
+            log += "<li>" + size + "</li>";
+          });
+          log += "</ul></li>";
+          $(".pf_log_content").prepend(log);
           this.nbimage += response.data.images.length;
         }
       });

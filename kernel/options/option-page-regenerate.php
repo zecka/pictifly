@@ -39,6 +39,29 @@ function pf_options_page(){
 			margin: 30px 0 0;
 			font-weight: bold;
 		}
+		.pf_log{
+			background: #fff;
+			margin-top: 20px;
+			height: 500px;
+			overflow-y: scroll;
+		}
+		.pf_log_content{
+			list-style-type: disc;
+			padding: 0 25px;
+		}
+		.pf_log_content ul{
+			padding: 0;
+			list-style-type: none;
+		}
+		.pf_log_content ul li + li{
+			padding-left: 4px;
+			border-left: 1px solid #999;
+		}
+		.pf_log_content ul li{
+			display: inline-block;
+			margin-left: 4px;
+			font-style: italic;
+		}
 	</style>
 		<?php if(empty($post_types)){ ?>
 			<div class="pf_option_page">
@@ -59,7 +82,7 @@ function pf_options_page(){
 		<?php }else{ ?>
 			<div class="pf_option_page">
 				<h1>Pictifly regenerate images</h1>
-				<button class="button" data-nonce="<?php echo wp_create_nonce('pf_regenerate'); ?>">Regenerate</button>
+				<button class="button start" data-nonce="<?php echo wp_create_nonce('pf_regenerate'); ?>">Regenerate</button>
 				<div class="pf_progress_count">
 					<div class="pf_progress_nbpost"><span class="value">0</span> posts regenerate</div>
 					<div class="pf_progress_nbimage"><span class="value">0</span> image sizes regenerate</div>
@@ -67,6 +90,9 @@ function pf_options_page(){
 				<div class="pf_progress">
 					<div class="pf_progress_statut"></div>
 					<div class="pf_progress_percent">Not started</div>
+				</div>
+				<div class="pf_log">
+					<ul class="pf_log_content"></ul>
 				</div>
 			</div>
 		<?php } ?>
@@ -87,10 +113,12 @@ function pf_ajax_item_image_regenerate(){
 
 		$sizes = pf_get_all_sizes();
 		$_pf_regenerated_imgs = [];
+		$sizes_name = [];
 		foreach($sizes as $size_name => $size){
 			if(in_array($post_type, $size['post_type'])){
 				$image_id = get_post_thumbnail_id($id);
 				$_pf_regenerated_imgs[] = pf_img($image_id, $size_name, false);
+				$sizes_name[] = $size_name;
 			}
 		}
 		$image_before = $_pf_regenerated_imgs;
@@ -99,7 +127,13 @@ function pf_ajax_item_image_regenerate(){
 		if(!$_pf_regenerated_imgs){
 			$_pf_regenerated_imgs = $image_before;
 		}
-		wp_send_json_success(["images"=>$_pf_regenerated_imgs]);
+		wp_send_json_success(
+			[
+				"images"=>$_pf_regenerated_imgs,
+				"sizes" => $sizes_name,
+				"post"	=> get_the_title($id).' ('.$post_type.')'
+			]
+		);
 	} catch (Exception $e) {
 		$msg = 'Exception : '.  $e->getMessage();
 		wp_send_json_error($msg);
