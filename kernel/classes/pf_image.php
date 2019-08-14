@@ -266,7 +266,7 @@ class PF_Image{
         $this->args['class']="pf_background_img";
         // Simulate background cover
         ?>
-        op-background>
+        op-background style="background-image:url(<?php echo $this->get_simple(); ?>); background-size: cover; background-position:center center;">
         <div class="pf_background">
             <?php $this->display(); ?>
         </div
