@@ -18,7 +18,8 @@ class PF_Image{
     public $resize_date_url;
     public $have_webp;
     private $render_array;
-    private $is_svg;
+	private $is_svg;
+	public $extension;
 
 
     public function __construct($id, $args){
@@ -35,23 +36,24 @@ class PF_Image{
         $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
         $this->resize_date_folder = $this->configs['resize_path'].$this->date_folder;
         $this->resize_date_url = $this->configs['resize_url'].$this->date_folder;
-        $this->have_webp = false;
-        if( ($this->pathinfo['extension'] !== 'svg') ){
-            $this->is_svg = false;
+		$this->have_webp = false;
+		$this->extension = $this->pathinfo['extension'];
+
+        if( ($this->extension === 'svg') ){
+            $this->is_svg = true;
+        }else{
+			$this->is_svg = false;
             $size = getimagesize($this->source_file);
             $this->width = $size[0];
             $this->height = $size[1];
             $this->mime_type = $size['mime'];
-
             $this->define_keypoint();
             $this->calcule_src_ratio();
             $this->calcule_target_ratio();
             $this->define_attribute();
-            $this->define_retina();
+			$this->define_retina();
+		}
 
-        }else{
-            $this->is_svg = true;
-        }
         $this->render_array = array();
 
     }
@@ -134,11 +136,13 @@ class PF_Image{
     }
 
     public function get(){
+
         try {
             if( ($this->pathinfo['extension'] !== 'svg') ){
-                foreach($this->args['breakpoints'] as $title=>$dimensions){
-                    if($dimensions!==false){
-                        $breakpoint = new PF_Breakpoint($this, $dimensions);
+
+				foreach($this->args['breakpoints'] as $title=>$dimensions){
+					if($dimensions!==false){
+						$breakpoint = new PF_Breakpoint($this, $dimensions);
                         $this->render_array['breakpoints'][$title] = $breakpoint->get();
                     }
                 }
@@ -155,7 +159,7 @@ class PF_Image{
 
         } catch (\Throwable $th) {
 		   //throw $th;
-            echo 'The id of image probably not exist';
+            echo 'The id of image probably not exist'. $th->getMessage();
         }
     }
     public function get_simple(){

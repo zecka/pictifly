@@ -17,7 +17,7 @@ class PF_Breakpoint{
     private $size_array; // array
 
     public function __construct($image, $dimensions){
-        $this->image = $image;
+		$this->image = $image;
         $this->dimensions = $dimensions;
         $this->define_ratio();
         if($this->image->args['ratio']){
@@ -30,6 +30,7 @@ class PF_Breakpoint{
             $this->define_crop_dimensions();
             $this->define_crop_coordinate();
 		}
+
         $this->generate();
     }
 

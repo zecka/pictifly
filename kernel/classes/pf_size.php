@@ -92,17 +92,27 @@ class PF_Size{
     }
 
     private function generate_img(){
-        set_time_limit(0);
-        $this->img = Image::make($this->image->source_file);
-        if($this->image->args['crop']){
-            if($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
-                $this->crop_from_keypoint();
-            }else{
-                $this->fit_to_format();
-            }
-        }else{
-            $this->fit_to_format();
-        }
+		set_time_limit(0);
+
+		if($this->image->extension == 'gif'){
+			$this->img = new Imagick($this->image->source_file); // $image_path is the path to the image location
+			$this->img = $this->img->coalesceImages();
+			$this->img->setGravity(\Imagick::GRAVITY_CENTER);
+			$this->img->cropImage($this->width,$this->height,0,0);
+			$this->img->setImagePage(0, 0, 0, 0);
+		}else{
+			$this->img = Image::make($this->image->source_file);
+			if($this->image->args['crop']){
+				if($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
+					$this->crop_from_keypoint();
+				}else{
+					$this->fit_to_format();
+				}
+			}else{
+				$this->fit_to_format();
+			}
+		}
+
     }
 
     private function crop_from_keypoint(){
@@ -132,14 +142,19 @@ class PF_Size{
     }
     private function save_img(){
 
-    	$this->img->sharpen(3);
-        $this->img->save(
-            $this->image->resize_date_folder.$this->filename,
-            $this->image->args['quality']
-        );
+		if($this->image->extension == 'gif'){
+			$this->img->writeImages($this->image->resize_date_folder.$this->filename, true);
+		}else{
+			$this->img->sharpen(3);
+			$this->img->save(
+				$this->image->resize_date_folder.$this->filename,
+				$this->image->args['quality']
+			);
+		}
+
     }
     private function convert_webp(){
-        if($this->image->browser_support_webp()){
+        if($this->image->browser_support_webp() && $this->image->extension !== 'gif'){
             $source =  $this->image->resize_date_folder.$this->filename;
             $destination = $source.'.webp';
             $success = WebPConvert::convert($source, $destination, [
