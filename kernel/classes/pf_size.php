@@ -96,10 +96,25 @@ class PF_Size{
 
 		if($this->image->extension == 'gif'){
 			$this->img = new Imagick($this->image->source_file); // $image_path is the path to the image location
-			$this->img = $this->img->coalesceImages();
-			$this->img->setGravity(\Imagick::GRAVITY_CENTER);
-			$this->img->cropImage($this->width,$this->height,0,0);
-			$this->img->setImagePage(0, 0, 0, 0);
+			if($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
+				$this->img= $this->img->coalesceImages();
+				foreach ($this->img as $frame) {
+					$frame->cropImage(
+						$this->breakpoint->width_crop,
+						$this->breakpoint->height_crop,
+						$this->breakpoint->x_crop,
+						$this->breakpoint->y_crop
+					);
+					$frame->thumbnailImage($this->width, $this->height);
+					$frame->setImagePage($this->width, $this->height, 0, 0);
+				}
+				$this->img = $this->img ->deconstructImages();
+			}else{
+				$this->img = $this->img->coalesceImages();
+				$this->img->setGravity(\Imagick::GRAVITY_CENTER);
+				$this->img->cropImage($this->width,$this->height,0,0);
+				$this->img->setImagePage(0, 0, 0, 0);
+			}
 		}else{
 			$this->img = Image::make($this->image->source_file);
 			if($this->image->args['crop']){
