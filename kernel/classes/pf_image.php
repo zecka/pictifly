@@ -136,7 +136,6 @@ class PF_Image{
     }
 
     public function get(){
-
         try {
             if( ($this->pathinfo['extension'] !== 'svg') ){
 
@@ -154,6 +153,10 @@ class PF_Image{
             }
 
             $this->render_array['mime'] = $this->mime_type;
+            $this->render_array['alt'] = $this->alt;
+            $this->render_array['id'] = $this->id;
+            $this->render_array['title'] = $this->title;
+            $this->render_array['base_path'] = $this->resize_date_url;
 
             return $this->render_array;
 
