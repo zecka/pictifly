@@ -115,8 +115,17 @@ class PF_Breakpoint{
 
     }
     private function define_ratio(){
-        // Calculate ratio then we can find height: width x ratio = height
-        if($this->image->args['ratio']){
+		// Calculate ratio then we can find height: width x ratio = height
+		if(
+			is_array($this->dimensions) &&
+			$this->dimensions[0] !== null && // width is not null
+			$this->dimensions[1] !== null && // height is not null
+			isset($this->dimensions[2]) && // Crop arg is define for given breakpoint
+			$this->dimensions[2] // Crop arg is true
+		){
+			$this->ratio = floatval( ($this->dimensions[1] / $this->dimensions[0]) );
+		}
+        elseif($this->image->args['ratio']){
             $this->ratio = $this->image->args['ratio'][1] / $this->image->args['ratio'][0]; // height / width
         }elseif(is_array($this->dimensions) && $this->image->args['crop']){
             if($this->dimensions[0] == null || $this->dimensions[1] == null){
