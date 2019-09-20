@@ -15,6 +15,5 @@ function pf_enqueue_scripts(){
         wp_enqueue_script( 'lazysizes' );
 	}
 
-
 }
 add_action('wp_enqueue_scripts', 'pf_enqueue_scripts');

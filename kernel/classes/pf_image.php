@@ -33,7 +33,10 @@ class PF_Image{
         $this->id = $id;
         $this->source_file = get_attached_file( $id );
         $this->pathinfo = pathinfo($this->source_file);
-        $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
+		$this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
+		if($this->date_folder==='/'){
+			$this->date_folder = '';
+		}
         $this->resize_date_folder = $this->configs['resize_path'].$this->date_folder;
         $this->resize_date_url = $this->configs['resize_url'].$this->date_folder;
 		$this->have_webp = false;
@@ -141,7 +144,7 @@ class PF_Image{
 
 				foreach($this->args['breakpoints'] as $title=>$dimensions){
 					if($dimensions!==false){
-						$breakpoint = new PF_Breakpoint($this, $dimensions);
+						$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
                         $this->render_array['breakpoints'][$title] = $breakpoint->get();
                     }
                 }

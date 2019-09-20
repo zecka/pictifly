@@ -16,7 +16,8 @@ class PF_Size{
     public $width; // int Final width of generate file
     public $height; // int Final width of generate file
     public $filename; // string
-    private $configs;
+	private $configs;
+	private $key; // Key in array custom field of image p.ex(md2) (md retina x2)
 
     public function __construct(PF_Image $image, PF_Breakpoint $breakpoint, $retina_x = 1){
         $this->configs = pf_configs();
@@ -24,10 +25,12 @@ class PF_Size{
         $this->image = $image;
         $this->retina_x = $retina_x;
         $this->define_dimensions();
-        $this->define_file_name();
+		$this->define_file_name();
+		$this->define_key();
     }
 
     private function define_dimensions(){
+
 
 
         if($this->breakpoint->based_on=='width'){
@@ -62,8 +65,13 @@ class PF_Size{
         $position   = $this->breakpoint->position_name;
         $quality    = '-'.$this->image->args['quality'];
         $extension  ='.'.$this->image->pathinfo['extension'];
-	    $this->filename = $file_name.$img_size.$position.$quality.$extension;
-    }
+		$this->filename = $file_name.$img_size.$position.$quality.$extension;
+	}
+	private function define_key(){
+		$key = $this->breakpoint->breakpoint_title;
+		$key .= $this->retina_x;
+		$this->key = $key;
+	}
     public function get(){
 
         // Check if folder exist
@@ -154,8 +162,23 @@ class PF_Size{
             $constraint->aspectRatio();
             $constraint->upsize();
         });
-    }
+	}
+	private function clean_old_file(){
+		$array_files = get_post_meta( $this->image->id, 'pf_files', true);
+		if(is_array($array_files) && isset($array_files[$this->key])){
+			$file = $array_files[$this->key];
+			if(file_exists($file)){
+				wp_delete_file($file);
+			}
+			if(file_exists($file.'.webp')){
+				wp_delete_file($file.'.webp');
+			}
+		}
+
+	}
     private function save_img(){
+
+		$this->clean_old_file();
 
 		if($this->image->extension == 'gif'){
 			$this->img->writeImages($this->image->resize_date_folder.$this->filename, true);
@@ -166,6 +189,16 @@ class PF_Size{
 				$this->image->args['quality']
 			);
 		}
+
+		// save size in pf_files data
+		$array_files = get_post_meta( $this->image->id, 'pf_files', true);
+		// Check if field is already set
+		if(!is_array($array_files)){
+			$array_files=array();
+		}
+		// Save file of current size is pf_files array
+		$array_files[$this->key] = $this->image->resize_date_folder.$this->filename;
+		update_post_meta( $this->image->id, 'pf_files', $array_files );
 
     }
     private function convert_webp(){

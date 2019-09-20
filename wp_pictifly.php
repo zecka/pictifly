@@ -33,6 +33,7 @@ require('kernel/classes/pf_size.php');
 require('kernel/helpers.php');
 require('kernel/pf_configs.php');
 require('kernel/pf_functions.php');
+require('kernel/hooks/wp-attachment-hooks.php');
 
 require('kernel/enqueue_scripts.php');
 require('kernel/media-library/pf_keypoint_field.php');

@@ -16,9 +16,10 @@ class PF_Breakpoint{
     public $y_crop; // int Y axis of top left corner for crop (from original image size)
     private $size_array; // array
 
-    public function __construct($image, $dimensions){
+    public function __construct($image, $dimensions, $title){
 		$this->image = $image;
         $this->dimensions = $dimensions;
+        $this->breakpoint_title = $title;
         $this->define_ratio();
         if($this->image->args['ratio']){
             $this->define_dimension_with_ratio();
