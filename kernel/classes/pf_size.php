@@ -68,7 +68,7 @@ class PF_Size{
 		$this->filename = $file_name.$img_size.$position.$quality.$extension;
 	}
 	private function define_key(){
-		$key = $this->breakpoint->breakpoint_title;
+		$key = 'w'.$this->width.'h'.$this->height;
 		$key .= $this->retina_x;
 		$this->key = $key;
 	}
