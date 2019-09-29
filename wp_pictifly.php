@@ -22,6 +22,8 @@ function pf_add_plugin_page_settings_link( $links ) {
 }
 
 
+require_once('inc/plugin-activation.php');
+
 
 require 'vendor/autoload.php';
 
