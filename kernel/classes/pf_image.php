@@ -165,7 +165,7 @@ class PF_Image{
 
         } catch (\Throwable $th) {
 		   //throw $th;
-            echo 'The id of image probably not exist'. $th->getMessage();
+            error_log( $th->getMessage() );
         }
     }
     public function get_simple(){
