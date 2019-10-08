@@ -3,7 +3,6 @@
 Plugin Name: Pictifly
 Plugin URI:
 GitHub Plugin URI: zecka/pictifly
-GitHub Plugin URI: https://github.com/zecka/pictifly
 Description: A plugin to generate image size on the fly and create picture html tag
 Author: Robin Ferrari (Octree)
 Author URI: https://octree.ch
