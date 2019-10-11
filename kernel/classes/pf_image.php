@@ -141,13 +141,14 @@ class PF_Image{
     public function get(){
         try {
             if( ($this->pathinfo['extension'] !== 'svg') ){
-
-				foreach($this->args['breakpoints'] as $title=>$dimensions){
-					if($dimensions!==false){
-						$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
-                        $this->render_array['breakpoints'][$title] = $breakpoint->get();
-                    }
-                }
+				if(isset($this->args['breakpoints'])){
+					foreach($this->args['breakpoints'] as $title=>$dimensions){
+						if($dimensions!==false){
+							$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
+							$this->render_array['breakpoints'][$title] = $breakpoint->get();
+						}
+					}
+				}
             }else{
                 if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
                     copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
