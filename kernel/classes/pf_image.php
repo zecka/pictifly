@@ -132,9 +132,12 @@ class PF_Image{
 
     }
     public function browser_support_webp(){
-        if( strpos( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false ||  strpos( $_SERVER['HTTP_USER_AGENT'], ' Chrome/' ) !== false ) {
+        if( isset($_SERVER['HTTP_ACCEPT']) && strpos( $_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false ) {
             return true; // webp is supported!
-        }
+		}
+		if(isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_USER_AGENT'], ' Chrome/') !== false){
+			return true;
+		}
         return false;
     }
 
@@ -170,7 +173,10 @@ class PF_Image{
         }
     }
     public function get_simple(){
-        $picture =  $this->get();
+		$picture =  $this->get();
+		if(!isset($picture['breakpoints'])){
+			return null;
+		}
         return $this->resize_date_url.$picture['breakpoints']['xs']['1x'];
     }
 
