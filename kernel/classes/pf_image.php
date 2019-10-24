@@ -278,12 +278,12 @@ class PF_Image{
         return $attributes;
     }
 
-    public function background(){
+    public function background_in_img(){
         ob_start();
         $this->args['class']="pf_background_img";
         // Simulate background cover
         ?>
-        op-background style="background-image:url(<?php echo $this->get_simple(); ?>); background-size: cover; background-position:center center;">
+        op-background-image style="background-image:url(<?php echo $this->get_simple(); ?>); background-size: cover; background-position:center center;">
         <div class="pf_background">
             <?php $this->display(); ?>
         </div
@@ -294,8 +294,16 @@ class PF_Image{
         return ob_get_clean();
     }
 
-
-
+    public function background(){
+        ob_start();
+        // Encode array picture data to json (for use in js)
+        $background_data = wp_json_encode($this->get());
+        $background_data = function_exists('wc_esc_json') ? wc_esc_json($background_data) : _wp_specialchars($background_data, ENT_QUOTES, 'UTF-8', true);
+        ?>
+        op-background data-background="<?php echo $background_data ?>" style="background-image:url(<?php echo $this->get_simple(); ?>); background-size: cover; background-position:center center;" 
+        <?php
+        return ob_get_clean();
+    }
 
 
 }
