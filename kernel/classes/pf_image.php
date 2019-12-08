@@ -164,7 +164,6 @@ class PF_Image{
             $this->render_array['id'] = $this->id;
             $this->render_array['title'] = $this->title;
             $this->render_array['base_path'] = $this->resize_date_url;
-
             return $this->render_array;
 
         } catch (\Throwable $th) {
@@ -182,6 +181,7 @@ class PF_Image{
 
     public function get_html(){
         $picture = $this->get();
+
         // define picture classes
         $figure_classes = array();
         $figure_classes[] = "pf_picture";

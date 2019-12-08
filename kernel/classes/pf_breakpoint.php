@@ -67,15 +67,23 @@ class PF_Breakpoint{
 
             $this->crop = (isset($this->dimensions[2])) ? $this->dimensions[2] : $this->image->args['crop'];
 
-
-
             if(!$this->crop){
                 if($this->ratio > $this->image->ratio){
-                    $this->height = $this->dimensions[1];
-                    $this->width = $this->height / $this->image->tratio;
+                    if($this->dimensions[1]){
+                        $this->height = $this->dimensions[1];
+                        $this->width = $this->height / $this->image->tratio;
+                    }else{
+                        $this->width  = $this->dimensions[0];
+                        $this->height = $this->width * $this->image->ratio;
+                    }
                 }else{
-                    $this->width = $this->dimensions[0];
-                    $this->height = $this->width * $this->image->ratio;
+                    if($this->dimensions[0]){
+                        $this->width  = $this->dimensions[0];
+                        $this->height = $this->width * $this->image->ratio;
+                    }else{
+                        $this->height = $this->dimensions[1];
+                        $this->width = $this->height / $this->image->ratio;
+                    }
                 }
 
             }else{
@@ -139,7 +147,12 @@ class PF_Breakpoint{
         }
     }
     private function define_crop_dimensions(){
-        $crop_ratio = $this->height / $this->width;
+        if(!$this->height || !$this->width){
+            // If width or height is not define we assume that we doesnt crop image
+            $crop_ratio = $this->image->height / $this->image->width;
+        }else{
+            $crop_ratio = $this->height / $this->width;
+        }
         if($this->based_on=='width'){
             $this->width_crop = $this->image->width;
             $this->height_crop= ( $this->image->width * $crop_ratio);
