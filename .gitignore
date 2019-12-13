@@ -1,9 +1,6 @@
 .DS_Store
 .phpintel
 .phpintel/
-vendor
-vendor/
-vendor/*
 .DS_Store
 .data
 !.data/scripts

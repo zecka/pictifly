@@ -7,7 +7,7 @@ Description: A plugin to generate image size on the fly and create picture html 
 Author: Robin Ferrari (Octree)
 Author URI: https://octree.ch
 Text Domain: pictifly
-Version: 0.1.5
+Version: 0.1.6
 */
 
 define( 'PF_VERSION', '0.1.5' );
