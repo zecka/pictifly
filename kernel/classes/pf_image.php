@@ -259,7 +259,7 @@ class PF_Image{
         </span>
 
         <?php
-        return ob_get_clean();
+        return pf_sanitize_output(ob_get_clean());
     }
 
     public function display(){
