@@ -143,6 +143,9 @@ class PF_Image{
     }
 
     public function get(){
+        if(!$this->id){
+            return null;
+        }
         try {
             if( ($this->pathinfo['extension'] !== 'svg') ){
 				if(isset($this->args['breakpoints'])){
@@ -173,6 +176,9 @@ class PF_Image{
         }
     }
     public function get_simple(){
+        if(!$this->id){
+            return null;
+        }
 		$picture =  $this->get();
 		if(!isset($picture['breakpoints'])){
 			return null;
@@ -181,6 +187,9 @@ class PF_Image{
     }
 
     public function get_html(){
+        if(!$this->id){
+            return null;
+        }
         $picture = $this->get();
 
         // define picture classes
@@ -195,6 +204,17 @@ class PF_Image{
 
         // define breakpoint source
         $breakpoints  = array();
+        if(!isset($picture['breakpoints'])){
+            ob_start();
+            echo '<pre>'; echo var_dump($picture); echo '</pre>';
+            echo '<pre>'; echo var_dump($this); echo '</pre>';
+            echo '<pre>'; echo var_dump($this->id); echo '</pre>';
+            $debug = ob_get_clean();
+            error_log($debug);
+        }
+        if(!is_array($picture['breakpoints'])){
+            return null;
+        }
         foreach( array_reverse( $picture['breakpoints'] ) as $breakpoint=>$sizes){
             $srcset=array();
             foreach($sizes as $size=>$filename){
@@ -272,7 +292,11 @@ class PF_Image{
     }
 
     public function display(){
-        echo $this->get_html();
+        if(!$this->id){
+            return null;
+        }else{
+            echo $this->get_html();
+        }
     }
 
     public function attributes(){
@@ -288,6 +312,10 @@ class PF_Image{
     }
 
     public function background_in_img(){
+        if (!$this->id) {
+            return null;
+        }
+
         ob_start();
         $this->args['class']="pf_background_img";
         // Simulate background cover
@@ -304,6 +332,9 @@ class PF_Image{
     }
 
     public function background(){
+        if(!$this->id){
+            return null;
+        }
         ob_start();
         // Encode array picture data to json (for use in js)
         $background_data = wp_json_encode($this->get());

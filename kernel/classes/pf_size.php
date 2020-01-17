@@ -146,7 +146,7 @@ class PF_Size{
 
     }
     private function generate_cropped_img(){
-         if(in_array("scale", [$this->image->args['crop'], $this->breakpoint->crop])){
+         if($this->scale){
             $this->scale_to_fit_canvas();
         }elseif($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
             $this->crop_from_keypoint();
