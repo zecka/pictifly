@@ -63,7 +63,7 @@ class PF_Image{
 
     private function default_args(){
         $default_args =  array(
-            'crop'	=> true,
+            'crop'	=> true, // true, false or "scale"
             'breakpoints'=> array(
                 'xs'	=> false,	// width on xs screen  (default: false)
                 'sm'	=> false,	// width on sm screen  (default: false)
@@ -79,6 +79,7 @@ class PF_Image{
             'lazyload_transition' => false,
             'quality' => 100,
             'title' => true,
+            'canvas_color' => "ffffff",
             'alt'	=> true,
             'class'	=> ''
         );
@@ -203,33 +204,34 @@ class PF_Image{
             $breakpoints[$breakpoint]['srcset'] = $srcset;
             $breakpoints[$breakpoint]['min-width'] = $this->configs['breakpoints'][$breakpoint];
         }
-
+        $bigger_bp = pf_get_bigger_bp($picture['breakpoints']);
         // Prefix srcset with data- for lazyload
         $srcset_prefix = "";
         if($this->configs['lazyload'] && $this->args['lazyload']){
             $srcset_prefix = "data-";
         }
-
+        $nb_breakpoints = count($breakpoints);
         ob_start();
         ?>
 
         <span class="<?php echo implode(" ", $figure_classes) ?>">
 
-            <picture><?php
+            <?php if($nb_breakpoints > 1): ?>
+                <picture>
+            <?php endif; ?>
+            <?php
 
-                foreach($breakpoints as $bp){
-                    if(!$this->is_svg):
+                if(!$this->is_svg && $nb_breakpoints > 1):
+                    foreach($breakpoints as $bp){
                         ?>
                         <source
                             <?php echo $srcset_prefix; ?>srcset="<?php echo implode(', ', $bp['srcset']); ?>"
                             media="(min-width: <?php echo $bp['min-width']; ?>px)"
                             type="<?php echo $picture['mime'];  ?>">
                         <?php
-                    endif;
-                }
-
-
-        ?>
+                    }
+                endif;
+            ?>
 
                 <img
                     <?php
@@ -250,12 +252,16 @@ class PF_Image{
                         class="lazyload<?php echo $this->args['class']; ?>"
                         src="<?php echo $this->resize_date_url.pf_get_smaller_bp($picture['breakpoints'])['1x']; ?>"
                         data-src="<?php echo $this->resize_date_url.pf_get_bigger_bp($picture['breakpoints'])['1x']; ?>"
+                        data-srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
                         src="<?php echo $this->resize_date_url.pf_get_bigger_bp($picture['breakpoints'])['1x']; ?>"
-                    <?php } ?>
+                        srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
+                        <?php } ?>
                 >
-            </picture>
+            <?php if ($nb_breakpoints > 1): ?>
+                </picture>
+            <?php endif;?>
         </span>
 
         <?php
