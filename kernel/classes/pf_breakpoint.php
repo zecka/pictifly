@@ -11,7 +11,7 @@ class PF_Breakpoint{
     public $position; // string
     public $width_crop; // height for crop (before resize)
     public $height_crop; // width for crop (brefore resize)
-    public $crop; // boolean
+    public $crop; // boolean or string (true, false or "scale")
     public $x_crop; // int X axis of top left corner for crop (from original image size)
     public $y_crop; // int Y axis of top left corner for crop (from original image size)
     private $size_array; // array

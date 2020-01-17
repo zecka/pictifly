@@ -205,6 +205,7 @@ class PF_Image{
             $breakpoints[$breakpoint]['min-width'] = $this->configs['breakpoints'][$breakpoint];
         }
         $bigger_bp = pf_get_bigger_bp($picture['breakpoints']);
+        $smaller_bp = pf_get_smaller_bp($picture['breakpoints']);
         // Prefix srcset with data- for lazyload
         $srcset_prefix = "";
         if($this->configs['lazyload'] && $this->args['lazyload']){
@@ -232,7 +233,6 @@ class PF_Image{
                     }
                 endif;
             ?>
-
                 <img
                     <?php
 
@@ -247,17 +247,20 @@ class PF_Image{
                     if(isset($this->title)){
                         echo 'title="'.$this->title.'" ';
                     }
+                    
                     if($this->configs['lazyload'] && $this->args['lazyload']){
                         ?>
                         class="lazyload<?php echo $this->args['class']; ?>"
-                        src="<?php echo $this->resize_date_url.pf_get_smaller_bp($picture['breakpoints'])['1x']; ?>"
-                        data-src="<?php echo $this->resize_date_url.pf_get_bigger_bp($picture['breakpoints'])['1x']; ?>"
-                        data-srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
+                        src="<?php echo $this->resize_date_url.$smaller_bp['1x']; ?>"
+                        data-src="<?php echo $this->resize_date_url.$bigger_bp['1x']; ?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
-                        src="<?php echo $this->resize_date_url.pf_get_bigger_bp($picture['breakpoints'])['1x']; ?>"
-                        srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
-                        <?php } ?>
+                        src="<?php echo $this->resize_date_url.$bigger_bp['1x']; ?>"
+                    <?php } ?>
+
+                    <?php if(isset($bigger_bp['2x'])): ?>
+                        <?php echo $srcset_prefix; ?>srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
+                    <?php endif; ?>
                 >
             <?php if ($nb_breakpoints > 1): ?>
                 </picture>

@@ -9,3 +9,4 @@ db/
 **/**/wp-content/uploads
 plugins/akismet
 plugins/hello.php
+intervention-test

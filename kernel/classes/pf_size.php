@@ -18,7 +18,7 @@ class PF_Size{
     public $filename; // string
 	private $configs;
 	private $key; // Key in array custom field of image p.ex(md2) (md retina x2)
-
+    private $scale;
     public function __construct(PF_Image $image, PF_Breakpoint $breakpoint, $retina_x = 1){
         $this->configs = pf_configs();
         $this->breakpoint = $breakpoint;
@@ -26,7 +26,8 @@ class PF_Size{
         $this->retina_x = $retina_x;
         $this->define_dimensions();
 		$this->define_file_name();
-		$this->define_key();
+        $this->define_key();
+        $this->define_scale();
     }
 
     private function define_dimensions(){
@@ -58,19 +59,30 @@ class PF_Size{
 
     }
 
+    private function define_scale(){
+        $crops   = [];
+        $crops[] = $this->image->args['crop'];
+        $crops[] = $this->breakpoint->crop;
+        $this->scale = in_array('scale', $crops, true );
+    }
 
     private function define_file_name(){
         $file_name  = $this->image->pathinfo['filename'];
         $img_size   = '-'.$this->width.'x'.$this->height;
         $position   = $this->breakpoint->position_name;
+        
+        $scale_name     = ($this->scale) ? '-scale' : '';
+        
+
         $quality    = '-'.$this->image->args['quality'];
         $extension  ='.'.$this->image->pathinfo['extension'];
-		$this->filename = $file_name.$img_size.$position.$quality.$extension;
+        $this->filename = $file_name.$img_size.$position.$scale_name.$quality.$extension;
+   
 	}
 	private function define_key(){
-		$key = 'w'.$this->width.'h'.$this->height;
-		$key .= $this->retina_x;
-		$this->key = $key;
+		$key_string = 'w'.$this->width.'h'.$this->height;
+		$key_string .= $this->retina_x;
+		$this->key = $key_string;
 	}
     public function get(){
 
@@ -101,7 +113,6 @@ class PF_Size{
 
     private function generate_img(){
 		set_time_limit(0);
-
 		if($this->image->extension == 'gif'){
 			$this->img = new Imagick($this->image->source_file); // $image_path is the path to the image location
 			if($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
@@ -116,7 +127,7 @@ class PF_Size{
 					$frame->thumbnailImage($this->width, $this->height);
 					$frame->setImagePage($this->width, $this->height, 0, 0);
 				}
-				$this->img = $this->img ->deconstructImages();
+				$this->img = $this->img->deconstructImages();
 			}else{
 				$this->img = $this->img->coalesceImages();
 				$this->img->setGravity(\Imagick::GRAVITY_CENTER);
@@ -126,19 +137,25 @@ class PF_Size{
 		}else{
 			$this->img = Image::make($this->image->source_file);
 			if($this->image->args['crop']){
-				if($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
-					$this->crop_from_keypoint();
-				}else{
-					$this->fit_to_format();
-				}
+                $this->generate_cropped_img();
+               
 			}else{
 				$this->fit_to_format();
 			}
 		}
 
     }
-
+    private function generate_cropped_img(){
+         if(in_array("scale", [$this->image->args['crop'], $this->breakpoint->crop])){
+            $this->scale_to_fit_canvas();
+        }elseif($this->image->keypoint && ( $this->breakpoint->crop || $this->image->args['ratio'])){
+            $this->crop_from_keypoint();
+        }else{
+            $this->fit_to_format();
+        }
+    }
     private function crop_from_keypoint(){
+    
 		$this->img->crop(
             $this->breakpoint->width_crop,
             $this->breakpoint->height_crop,
@@ -150,15 +167,32 @@ class PF_Size{
         });
 
     }
+    /**
+     * Scale image to fit canvas instead crop it
+     * So we have to add border in top/bottom or left/right to fit format
+     * @see http://image.intervention.io/api/resizeCanvas
+     * @return void
+     */
+    private function scale_to_fit_canvas(){
+        $this->img->resize($this->width, $this->height, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $this->img->resizeCanvas(
+            $this->width,
+            $this->height,
+            'center',
+            false,
+            $this->image->args['canvas_color']
+        );
+    }
     private function fit_to_format(){
-
-
         $this->img->fit($this->width, $this->height, function ($constraint) {
             $constraint->upsize();
         }, $this->breakpoint->position);
     }
     private function resize(){
-        $img->resize($this->width, $this->height, function ($constraint) {
+        $this->img->resize($this->width, $this->height, function ($constraint) {
             $constraint->aspectRatio();
             $constraint->upsize();
         });
