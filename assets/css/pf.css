@@ -6,7 +6,6 @@
 }
 .pf_lazy img {
   filter: blur(0px) grayscale(20%);
-  transform: scale(1.09);
 }
 .pf_lazy--transition img {
   transition: all 0.5s;
