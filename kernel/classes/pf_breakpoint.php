@@ -60,37 +60,15 @@ class PF_Breakpoint{
     }
     private function define_dimension(){
         // here define width, height and based on
-
         // first check if dimenstion is set with an array or not
+        // if dimension is not array that's meen that we only prived width so we need to calculate height
         if(is_array($this->dimensions)){
-
-
             $this->crop = (isset($this->dimensions[2])) ? $this->dimensions[2] : $this->image->args['crop'];
-
             if(!$this->crop){
-                if($this->ratio > $this->image->ratio){
-                    if($this->dimensions[1]){
-                        $this->height = $this->dimensions[1];
-                        $this->width = $this->height / $this->image->tratio;
-                    }else{
-                        $this->width  = $this->dimensions[0];
-                        $this->height = $this->width * $this->image->ratio;
-                    }
-                }else{
-                    if($this->dimensions[0]){
-                        $this->width  = $this->dimensions[0];
-                        $this->height = $this->width * $this->image->ratio;
-                    }else{
-                        $this->height = $this->dimensions[1];
-                        $this->width = $this->height / $this->image->ratio;
-                    }
-                }
-
+                $this->define_dimension_cropped();
             }else{
-                $this->width  = $this->dimensions[0];
-                $this->height = $this->dimensions[1];
+                $this->define_dimension_uncropped();
             }
-
             if($this->height === null){
                 $this->based_on="width";
             }elseif($this->width == null){
@@ -105,10 +83,35 @@ class PF_Breakpoint{
             $this->based_on="width";
             $this->crop = false;
         }
-
-
     }
-
+    private function define_dimension_uncropped(){
+        $this->width  = $this->dimensions[0];
+        $this->height = $this->dimensions[1];
+    }
+    /**
+     * Define the image size dimension if need crop image
+     *
+     * @return void
+     */
+    private function define_dimension_cropped(){
+        if($this->ratio > $this->image->ratio){
+            if($this->dimensions[1]){
+                $this->height = $this->dimensions[1];
+                $this->width = $this->height / $this->image->tratio;
+            }else{
+                $this->width  = $this->dimensions[0];
+                $this->height = $this->width * $this->image->ratio;
+            }
+        }else{
+            if($this->dimensions[0]){
+                $this->width  = $this->dimensions[0];
+                $this->height = $this->width * $this->image->ratio;
+            }else{
+                $this->height = $this->dimensions[1];
+                $this->width = $this->height / $this->image->ratio;
+            }
+        }
+    }
     /**
      * Define base crop position
      * If
@@ -229,12 +232,12 @@ class PF_Breakpoint{
         $this->y_crop = (int) $y;
     }
     private function generate(){
-        $size_array = array();
+        $sizes = array();
         for($retina_x=1; $retina_x <= $this->image->retina; $retina_x++){
             $size = new PF_Size($this->image, $this, $retina_x);
-            $size_array[$retina_x.'x']= $size->get();
+            $sizes[$retina_x.'x']= $size->get();
         }
-        $this->size_array = $size_array;
+        $this->size_array = $sizes;
     }
     public function get(){
         return $this->size_array;
