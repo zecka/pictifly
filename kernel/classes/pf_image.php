@@ -160,10 +160,7 @@ class PF_Image{
 					}
 				}
             }else{
-                if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
-                    copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
-                }
-                $this->render_array['breakpoints']['xs']['1x'] = $this->pathinfo['basename'];
+               $this->get_svg();
             }
 
             $this->render_array['mime'] = $this->mime_type;
@@ -177,6 +174,19 @@ class PF_Image{
 		   //throw $th;
             error_log( $th->getMessage() );
         }
+    }
+    private function get_svg(){
+        if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
+            copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
+        }
+        if($this->configs['imgix'] && $this->configs['imgix_url']){
+            $img_path = str_replace(ABSPATH, '', $this->source_file);
+            $imgix_url = $this->configs['imgix_url'];
+            $img_path = $imgix_url."/".$img_path;
+        }else{
+            $img_path = $this->pathinfo['basename'];
+        }
+        $this->render_array['breakpoints']['xs']['1x'] = $img_path;
     }
     public function get_simple(){
         if(!$this->id){
