@@ -21,7 +21,6 @@ class PF_Image{
 	private $is_svg;
 	public $extension;
 
-
     public function __construct($id, $args){
         if(!$id){
             return false;
@@ -33,12 +32,16 @@ class PF_Image{
         $this->id = $id;
         $this->source_file = get_attached_file( $id );
         $this->pathinfo = pathinfo($this->source_file);
-		$this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
+        $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
 		if($this->date_folder==='/'){
-			$this->date_folder = '';
+            $this->date_folder = '';
 		}
         $this->resize_date_folder = $this->configs['resize_path'].$this->date_folder;
-        $this->resize_date_url = $this->configs['resize_url'].$this->date_folder;
+        if($this->configs['imgix'] && $this->configs['imgix_url']){
+            $this->resize_date_url = "";
+        }else{
+            $this->resize_date_url = $this->configs['resize_url'].$this->date_folder;
+        }
 		$this->have_webp = false;
 		$this->extension = $this->pathinfo['extension'];
 
@@ -204,14 +207,7 @@ class PF_Image{
 
         // define breakpoint source
         $breakpoints  = array();
-        if(!isset($picture['breakpoints'])){
-            ob_start();
-            echo '<pre>'; echo var_dump($picture); echo '</pre>';
-            echo '<pre>'; echo var_dump($this); echo '</pre>';
-            echo '<pre>'; echo var_dump($this->id); echo '</pre>';
-            $debug = ob_get_clean();
-            error_log($debug);
-        }
+     
         if(!is_array($picture['breakpoints'])){
             return null;
         }

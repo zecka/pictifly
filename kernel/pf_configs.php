@@ -3,6 +3,8 @@ function pf_configs(){
     // DEFINE BREAKPOINT
     
     $configs=array(
+        'imgix'  => false,
+        'imgix_url'  => false,
         'lazyload'  => false,
         'breakpoints' =>array(
             'xs'  => 0,

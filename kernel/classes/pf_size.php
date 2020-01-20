@@ -25,15 +25,12 @@ class PF_Size{
         $this->image = $image;
         $this->retina_x = $retina_x;
         $this->define_dimensions();
+        $this->define_scale();
 		$this->define_file_name();
         $this->define_key();
-        $this->define_scale();
     }
 
     private function define_dimensions(){
-
-
-
         if($this->breakpoint->based_on=='width'){
             $this->width = (int) ( $this->breakpoint->width * $this->retina_x);
             $this->height= (int) ( $this->width * $this->breakpoint->ratio );
@@ -85,7 +82,9 @@ class PF_Size{
 		$this->key = $key_string;
 	}
     public function get(){
-
+        if($this->image->configs['imgix'] && $this->image->configs['imgix_url']){
+           return $this->get_imgix_url();
+        }
         // Check if folder exist
         if (!is_dir($this->image->resize_date_folder)){
             mkdir($this->image->resize_date_folder, 0777, true);
@@ -110,7 +109,26 @@ class PF_Size{
 
         return $this->filename;
     }
-
+    private function get_imgix_url(){
+        $img_path = str_replace(ABSPATH, '', $this->image->source_file);
+        $imgix_url = $this->image->configs['imgix_url'];
+        // $image_url = "test-1.jpg";
+        $imgix_url = $imgix_url."/".$img_path."?";
+        $params = [];
+        $params[] = 'w='.$this->width;
+        $params[] = 'h='.$this->height;
+        if( $this->image->browser_support_webp()){
+            $params[] = 'fm=webp';
+        }
+        if($this->image->args['crop']){
+            if($this->scale){
+                $params[] = 'fit=clamp';
+            }else{
+                $params[] = 'rect='.$this->breakpoint->x_crop.','.$this->breakpoint->y_crop.','.$this->breakpoint->width_crop.','.$this->breakpoint->height_crop;
+            }
+        }
+        return $imgix_url .implode("&", $params);
+    }
     private function generate_img(){
 		set_time_limit(0);
 		if($this->image->extension == 'gif'){
@@ -243,7 +261,7 @@ class PF_Size{
                 // It is not required that you set any options - all have sensible defaults.
                 // We set some, for the sake of the example.
                 'quality' => 'auto',
-                'max-quality' => 90,
+                'max-quality' => 100,
                 'converters' => [
                     'cwebp',
                     'imagick',
