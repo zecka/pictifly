@@ -40,7 +40,7 @@ export default {
       }
     },
     getAttachments() {
-      console.log("get", this.current_item);
+      console.log("start get");
       const data = {
         action: "pf_get_attachments",
         nonce: nonce,
@@ -71,7 +71,6 @@ export default {
         console.log(key + "attachment have" + attachment.files.length);
         attachment.files.forEach(file => {
           promises.push(this.compressSize(file));
-          promises.push(this.compressSize(file, true));
         });
       });
 
@@ -93,8 +92,8 @@ export default {
       );
       this.nextPage();
     },
-    compressSize(file, webp = false) {
-      let url = webp ? file.url + ".webp" : file.url;
+    compressSize(file) {
+      let url = file.url;
       return new Promise(resolve => {
         fetch(url)
           .then(res => res.blob()) // Gets the response and returns it as a blob
@@ -106,7 +105,7 @@ export default {
               new Compressor(blob, {
                 quality: this.quality / 100,
                 success: blob => {
-                  resolve({ ...file, blob, webp });
+                  resolve({ ...file, blob });
                 },
                 error(err) {
                   console.error(err);
@@ -129,10 +128,8 @@ export default {
         files.forEach((file, idx) => {
           let { blob, ...fileData } = file;
           data.append(idx, blob);
-          data.append("files_keys[]", fileData.key);
           data.append("attachments_ids[]", fileData.id);
           data.append("files_path[]", fileData.file);
-          data.append("files_iswebp[]", fileData.webp);
         });
         $.ajax({
           type: "post",
@@ -172,7 +169,7 @@ export default {
         },
         progress: {
           color: "#2dbd2d",
-          backgroundColor: "#333333"
+          backgroundColor: "#ffffff"
         },
         layout: {
           height: 200,

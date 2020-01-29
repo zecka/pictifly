@@ -84,40 +84,34 @@ class PF_Size{
         if($this->image->configs['imgix'] && $this->image->configs['imgix_url']){
            return $this->get_imgix_url();
         }
-        // Check if folder exist
-        if (!is_dir($this->image->resize_date_folder)){
-            mkdir($this->image->resize_date_folder, 0777, true);
-        }
+       
         // Check if default file existe (jpg, png, …)
-        if(!file_exists($this->image->resize_date_folder.$this->filename )){
+        if(!file_exists($this->image->resize_folder_path.$this->filename )){
+            // Check if folder exist
+            if (!is_dir($this->image->resize_folder_path)) {
+                mkdir($this->image->resize_folder_path, 0777, true);
+            }
             $this->generate_img();
             $this->save_img();
         }
         // Convert to webp if enable
-        if(!file_exists($this->image->resize_date_folder.$this->filename.'.webp') && $this->image->args['webp']){
+        if(!file_exists($this->image->resize_folder_path.$this->filename.'.webp') && $this->image->args['webp']){
             $this->convert_webp();
 
         }elseif($this->image->args['webp']){
             $this->image->have_webp = true;
         }
         $webp = $this->image->have_webp && $this->image->browser_support_webp();
-
-        $minkey = ($webp) ? $this->key.'webp' : $this->key;
-        
-        if(isset($this->image->pf_files_min[$minkey]) && file_exists($this->image->pf_files_min[$minkey])){
-            $url = $this->image->pf_files_min[$minkey];
-            $url = str_replace($this->image->resize_date_folder, "", $url);
-            $this->filename = $url;
-            return $this->filename;
-        }
         
         if($webp){
             $this->filename = $this->filename . '.webp';
             $this->image->mime_type = "image/webp";
             $webp = true;
         }
-        
-       
+        $min_fileinfo = PF_Compress::filepath_info_for_compression($this->image->resize_folder_path.$this->filename);
+        if(file_exists($min_fileinfo['fullpath'])){
+            return 'min/'.$min_fileinfo['filename'];
+        }
         return $this->filename;
     }
     private function get_imgix_url(){
@@ -230,34 +224,20 @@ class PF_Size{
         pf_on_delete_attachement($this->image->id);
 	}
     private function save_img(){
-
-		// $this->clean_old_file();
-
 		if($this->image->extension == 'gif'){
-			$this->img->writeImages($this->image->resize_date_folder.$this->filename, true);
+			$this->img->writeImages($this->image->resize_folder_path.$this->filename, true);
 		}else{
 			$this->img->sharpen(3);
 			$this->img->save(
-				$this->image->resize_date_folder.$this->filename,
+				$this->image->resize_folder_path.$this->filename,
 				$this->image->args['quality']
 			);
 		}
 
-		// save size in pf_files data
-		$array_files = get_post_meta( $this->image->id, 'pf_files', true);
-		// Check if field is already set
-		if(!is_array($array_files)){
-			$array_files=array();
-        }
-		// Save file of current size is pf_files array
-		$array_files[$this->key] = $this->image->resize_date_folder.$this->filename;
-        
-		update_post_meta( $this->image->id, 'pf_files', $array_files );
-
     }
     private function convert_webp(){
         if($this->image->browser_support_webp() && $this->image->extension !== 'gif'){
-            $source =  $this->image->resize_date_folder.$this->filename;
+            $source =  $this->image->resize_folder_path.$this->filename;
             $destination = $source.'.webp';
             $success = WebPConvert::convert($source, $destination, [
                 // It is not required that you set any options - all have sensible defaults.

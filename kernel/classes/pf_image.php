@@ -16,16 +16,16 @@ class PF_Image{
     public $alt;
     public $mime_type;
     public $id;
+    public $default_id; // id in default lang
     public $args;
     public $retina;
     public $keypoint; // bool, array(x,y) in percent
-    public $resize_date_folder;
-    public $resize_date_url;
+    public $resize_folder_path;
+    public $resize_folder_url;
     public $have_webp;
     private $render_array;
 	private $is_svg;
 	public $extension;
-    public $date_folder;
     public $pf_files_min;
     public function __construct($id, $args){
         if(!$id){
@@ -37,23 +37,21 @@ class PF_Image{
         $this->configs = pf_configs();
         $this->args = $args;
         $this->id = $id;
+        $this->default_id = pf_get_id_in_default_lang($id);
         $this->source_file = get_attached_file( $id );
         $this->pf_files_min = get_post_meta($id, 'pf_files_min', true);
         $this->pathinfo = pathinfo($this->source_file);
-        $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
-		if($this->date_folder==='/'){
-            $this->date_folder = '';
-		}
-        $this->resize_date_folder = $this->configs['resize_path'].$this->date_folder;
+
+        $this->resize_folder_path = $this->configs['resize_path'].$this->default_id.'/';
         if($this->configs['imgix'] && $this->configs['imgix_url']){
-            $this->resize_date_url = "";
+            $this->resize_folder_url = "";
         }else{
-            $this->resize_date_url = $this->configs['resize_url'].$this->date_folder;
+            $this->resize_folder_url = $this->configs['resize_url'].$this->default_id.'/';
         }
 		$this->have_webp = false;
 		$this->extension = $this->pathinfo['extension'];
 
-        if( ($this->extension === 'svg') ){
+        if( $this->extension === 'svg' ){
             $this->is_svg = true;
         }else{
 			$this->is_svg = false;
@@ -188,7 +186,7 @@ class PF_Image{
             $this->render_array['alt'] = $this->alt;
             $this->render_array['id'] = $this->id;
             $this->render_array['title'] = $this->title;
-            $this->render_array['base_path'] = $this->resize_date_url;
+            $this->render_array['base_path'] = $this->resize_folder_url;
             return $this->render_array;
 
         } catch (\Throwable $th) {
@@ -197,8 +195,8 @@ class PF_Image{
         }
     }
     private function get_svg(){
-        if(!file_exists( $this->resize_date_folder.$this->pathinfo['basename'])){
-            copy($this->source_file, $this->resize_date_folder.$this->pathinfo['basename']);
+        if(!file_exists( $this->resize_folder_path.$this->pathinfo['basename'])){
+            copy($this->source_file, $this->resize_folder_path.$this->pathinfo['basename']);
         }
         if($this->configs['imgix'] && $this->configs['imgix_url']){
             $img_path = str_replace(ABSPATH, '', $this->source_file);
@@ -217,7 +215,7 @@ class PF_Image{
 		if(!isset($picture['breakpoints'])){
 			return null;
 		}
-        return $this->resize_date_url.$picture['breakpoints']['xs']['1x'];
+        return $this->resize_folder_url.$picture['breakpoints']['xs']['1x'];
     }
 
     public function get_html(){
@@ -244,7 +242,7 @@ class PF_Image{
             foreach( array_reverse( $picture['breakpoints'] ) as $breakpoint=>$sizes){
                 $srcset=array();
                 foreach($sizes as $size=>$filename){
-                    $srcset[]=$this->resize_date_url.$filename.' '.$size;
+                    $srcset[]=$this->resize_folder_url.$filename.' '.$size;
                 }
                 if(isset($this->configs['breakpoints'][$breakpoint])){
                     $breakpoints[$breakpoint]['srcset'] = $srcset;
@@ -307,15 +305,15 @@ class PF_Image{
                     if($this->configs['lazyload'] && $this->args['lazyload']){
                         ?>
                         class="lazyload<?php echo $this->args['class']; ?>"
-                        src="<?php echo $this->resize_date_url.$smaller_bp['1x']; ?>"
-                        data-src="<?php echo $this->resize_date_url.$bigger_bp['1x']; ?>"
+                        src="<?php echo $this->resize_folder_url.$smaller_bp['1x']; ?>"
+                        data-src="<?php echo $this->resize_folder_url.$bigger_bp['1x']; ?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
-                        src="<?php echo $this->resize_date_url.$bigger_bp['1x']; ?>"
+                        src="<?php echo $this->resize_folder_url.$bigger_bp['1x']; ?>"
                     <?php } ?>
 
                     <?php if(isset($bigger_bp['2x'])): ?>
-                        <?php echo $srcset_prefix; ?>srcset="<?php echo $this->resize_date_url.$bigger_bp['1x'].' 1x,'. $this->resize_date_url.$bigger_bp['2x'].' 2x';?>"
+                        <?php echo $srcset_prefix; ?>srcset="<?php echo $this->resize_folder_url.$bigger_bp['1x'].' 1x,'. $this->resize_folder_url.$bigger_bp['2x'].' 2x';?>"
                     <?php endif; ?>
                 >
             <?php if ($nb_breakpoints > 1): ?>

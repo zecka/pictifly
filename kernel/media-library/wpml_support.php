@@ -16,4 +16,12 @@ function pf_get_translateds_ids($media_id){
 
     return $ids;
 }
+
+function pf_get_id_in_default_lang($id){
+    if(function_exists('icl_object_id')){
+        global $sitepress;
+        $id = icl_object_id($id, 'attachment', false, $sitepress->get_default_language());
+    }
+    return $id;
+}
 ?>
