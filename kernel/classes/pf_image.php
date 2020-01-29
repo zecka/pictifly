@@ -4,6 +4,11 @@ class PF_Image{
     public $source_file;
     public $width;
     public $height;
+
+    public $default_breakpoint;
+    public $default_width;
+    public $default_height;
+
     public $ratio;
     public $target_ratio;
     public $pathinfo;
@@ -20,17 +25,20 @@ class PF_Image{
     private $render_array;
 	private $is_svg;
 	public $extension;
-
+    public $date_folder;
+    public $pf_files_min;
     public function __construct($id, $args){
         if(!$id){
             return false;
         }
+        $this->default_breakpoint = false;
         $args_default=$this->default_args();
         $args=array_replace_recursive($args_default, $args);
         $this->configs = pf_configs();
         $this->args = $args;
         $this->id = $id;
         $this->source_file = get_attached_file( $id );
+        $this->pf_files_min = get_post_meta($id, 'pf_files_min', true);
         $this->pathinfo = pathinfo($this->source_file);
         $this->date_folder = explode("/uploads/", $this->pathinfo['dirname'])[1].'/';
 		if($this->date_folder==='/'){
@@ -67,6 +75,9 @@ class PF_Image{
     private function default_args(){
         $default_args =  array(
             'crop'	=> true, // true, false or "scale"
+            'ratio'	=> false,
+            'width' => null, // Default width    Put in img tag (use if no breakpoin is set or if browser doesn't support picture tag)
+            'height' => null, // Default height  ´´
             'breakpoints'=> array(
                 'xs'	=> false,	// width on xs screen  (default: false)
                 'sm'	=> false,	// width on sm screen  (default: false)
@@ -75,7 +86,6 @@ class PF_Image{
                 'xl'	=> false,	// width on xl screen  (default: false)
                 'xxl'	=> false,	// width on xxl screen (default: false)
             ),
-            'ratio'	=> false,
             'webp'	=> true,
             'retina' => true,
             'lazyload'	=> true,
@@ -156,12 +166,23 @@ class PF_Image{
 						if($dimensions!==false){
 							$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
 							$this->render_array['breakpoints'][$title] = $breakpoint->get();
-						}
-					}
+                            $last_breakpoint = $breakpoint->get();
+                        }
+                    }
+                    
+                   
+
 				}
             }else{
                $this->get_svg();
             }
+            if($this->args['width'] || $this->args['height']){
+                $default_img =  new PF_Breakpoint($this, [$this->args['width'], $this->args['height'], $this->args['crop']], 'default');
+                $this->render_array['default_img'] = $default_img->get();
+            }else{
+                $this->render_array['default_img'] = $last_breakpoint;
+            }
+          
 
             $this->render_array['mime'] = $this->mime_type;
             $this->render_array['alt'] = $this->alt;
@@ -217,21 +238,30 @@ class PF_Image{
 
         // define breakpoint source
         $breakpoints  = array();
-     
-        if(!is_array($picture['breakpoints'])){
-            return null;
-        }
-        foreach( array_reverse( $picture['breakpoints'] ) as $breakpoint=>$sizes){
-            $srcset=array();
-            foreach($sizes as $size=>$filename){
-                $srcset[]=$this->resize_date_url.$filename.' '.$size;
+        
+        
+        if(is_array($picture['breakpoints'])){
+            foreach( array_reverse( $picture['breakpoints'] ) as $breakpoint=>$sizes){
+                $srcset=array();
+                foreach($sizes as $size=>$filename){
+                    $srcset[]=$this->resize_date_url.$filename.' '.$size;
+                }
+                if(isset($this->configs['breakpoints'][$breakpoint])){
+                    $breakpoints[$breakpoint]['srcset'] = $srcset;
+                    $breakpoints[$breakpoint]['min-width'] = $this->configs['breakpoints'][$breakpoint];
+                }
             }
-
-            $breakpoints[$breakpoint]['srcset'] = $srcset;
-            $breakpoints[$breakpoint]['min-width'] = $this->configs['breakpoints'][$breakpoint];
+            $bigger_bp  = pf_get_bigger_bp($picture['breakpoints']);
+            $smaller_bp = pf_get_smaller_bp($picture['breakpoints']);
+        }else{
+            if(!$picture['default_img']){
+                return null;
+            }
+            $bigger_bp  = $picture['default_img'];
+            $smaller_bp = $picture['default_img'];
         }
-        $bigger_bp = pf_get_bigger_bp($picture['breakpoints']);
-        $smaller_bp = pf_get_smaller_bp($picture['breakpoints']);
+
+
         // Prefix srcset with data- for lazyload
         $srcset_prefix = "";
         if($this->configs['lazyload'] && $this->args['lazyload']){

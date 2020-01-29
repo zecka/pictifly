@@ -1,0 +1,61 @@
+$font_path: "/fonts/";
+
+$pseudo-content: "\0020";
+$xxs: 425px;
+$xs: 480px;
+$sm: 760px;
+$md: 996px;
+$lg: 1200px;
+$xl: 1800px;
+$blue: #5890f9;
+$red: #ac1c1c;
+
+$white: #fff;
+$black: #0e0e0e;
+
+$gray: #727c8e;
+$light-gray: #ededed;
+$mid-gray: rgba(#515c6f, 0.5);
+$orange: #faa61a;
+$gold: #ffd700;
+$green: #199e19;
+$dark-gray: #506677;
+$blue: #1247bb;
+// Social color
+$facebook-color: #3b5998;
+$google-color: #d44638;
+
+$page-background: $white;
+$section-background: #ebebeb;
+$primary: $orange;
+$secondary: #87a855;
+
+$box-radius: 5px;
+$radius: 3px;
+$box-shadow: 0 0 10px rgba($black, 0.051);
+$box-shadow-medium: 0 0 10px rgba($black, 0.11);
+$box-shadow-strong: 0 0 10px rgba($black, 0.51);
+
+@mixin font() {
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+@mixin font-bigtitle() {
+  font-family: "Oswald", sans-serif;
+  text-transform: uppercase;
+}
+@mixin font-title() {
+  font-family: "Playfair Display", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+$normal: 300;
+$bold: 400;
+
+$primary-gradient: linear-gradient(90deg, lighten($primary, 0) 0%, darken($primary, 10) 100%);
+
+$transition: 0.3s ease-in-out;
+
+$gap: 10px;

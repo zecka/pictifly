@@ -18,6 +18,7 @@ function pf_add_media_custom_field( $form_fields, $post ) {
 
     $img = wp_get_attachment_image_src( $post->ID, 'large')[0];
 
+
     ?>
     <div class="pf_keypoint_wrapper">
         <div class="pf_keypoint_figure">
@@ -29,7 +30,13 @@ function pf_add_media_custom_field( $form_fields, $post ) {
         <label>Percent top:</label>
         <input type="text" class="pf_keypoint_top" name="attachments[<?php echo $post->ID; ?>][pf_keypoint_top]" value="<?php echo $top_value; ?>" />
 
-
+        <?php 
+        
+        $test = get_post_meta($post->ID, 'pf_files', true);
+        echo '<pre>';
+        echo print_r($test);
+        echo '</pre>';
+        ?>
     </div>
     <?php
     $keypoint_html = ob_get_clean();

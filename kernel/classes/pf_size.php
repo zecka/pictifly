@@ -78,7 +78,6 @@ class PF_Size{
 	}
 	private function define_key(){
 		$key_string = 'w'.$this->width.'h'.$this->height;
-		$key_string .= $this->retina_x;
 		$this->key = $key_string;
 	}
     public function get(){
@@ -101,12 +100,24 @@ class PF_Size{
         }elseif($this->image->args['webp']){
             $this->image->have_webp = true;
         }
+        $webp = $this->image->have_webp && $this->image->browser_support_webp();
 
-        if($this->image->have_webp && $this->image->browser_support_webp()){
+        $minkey = ($webp) ? $this->key.'webp' : $this->key;
+        
+        if(isset($this->image->pf_files_min[$minkey]) && file_exists($this->image->pf_files_min[$minkey])){
+            $url = $this->image->pf_files_min[$minkey];
+            $url = str_replace($this->image->resize_date_folder, "", $url);
+            $this->filename = $url;
+            return $this->filename;
+        }
+        
+        if($webp){
             $this->filename = $this->filename . '.webp';
             $this->image->mime_type = "image/webp";
+            $webp = true;
         }
-
+        
+       
         return $this->filename;
     }
     private function get_imgix_url(){
@@ -216,21 +227,11 @@ class PF_Size{
         });
 	}
 	private function clean_old_file(){
-		$array_files = get_post_meta( $this->image->id, 'pf_files', true);
-		if(is_array($array_files) && isset($array_files[$this->key])){
-			$file = $array_files[$this->key];
-			if(file_exists($file)){
-				wp_delete_file($file);
-			}
-			if(file_exists($file.'.webp')){
-				wp_delete_file($file.'.webp');
-			}
-		}
-
+        pf_on_delete_attachement($this->image->id);
 	}
     private function save_img(){
 
-		$this->clean_old_file();
+		// $this->clean_old_file();
 
 		if($this->image->extension == 'gif'){
 			$this->img->writeImages($this->image->resize_date_folder.$this->filename, true);
@@ -247,9 +248,10 @@ class PF_Size{
 		// Check if field is already set
 		if(!is_array($array_files)){
 			$array_files=array();
-		}
+        }
 		// Save file of current size is pf_files array
 		$array_files[$this->key] = $this->image->resize_date_folder.$this->filename;
+        
 		update_post_meta( $this->image->id, 'pf_files', $array_files );
 
     }
@@ -261,7 +263,7 @@ class PF_Size{
                 // It is not required that you set any options - all have sensible defaults.
                 // We set some, for the sake of the example.
                 'quality' => 'auto',
-                'max-quality' => 100,
+                'max-quality' => $this->image->args['quality'],
                 'converters' => [
                     'cwebp',
                     'imagick',

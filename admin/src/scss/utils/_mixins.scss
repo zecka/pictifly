@@ -1,0 +1,46 @@
+@function calculateEm($reference, $destination) {
+  $emSize: $destination / $reference;
+  @return $emSize * 1em;
+}
+
+@function calculatePercent($first, $second) {
+  $precentSize: $second / $first;
+  @return $precentSize * 100 * 1%;
+}
+
+@function calculateRem($px) {
+  $remSize: $px / 16px;
+  @return $remSize * 1rem;
+}
+@mixin absolute($top: unset, $right: unset, $bottom: unset, $left: unset) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+@mixin absoluteCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+@mixin fixed($top: unset, $right: unset, $bottom: unset, $left: unset) {
+  position: fixed;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+@mixin container() {
+  width: 90%;
+  max-width: 1180px;
+  margin: auto;
+  @media screen and (max-width: 1024px) {
+    .container {
+      width: auto;
+      margin: 0 20px;
+    }
+  }
+}

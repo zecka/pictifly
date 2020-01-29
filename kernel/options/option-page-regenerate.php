@@ -166,7 +166,6 @@ function pf_ajax_regenerate_get_items(){
 			];
 		}
 	}
-
 	wp_send_json_success($items);
 }
 

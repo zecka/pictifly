@@ -151,3 +151,8 @@ if(! function_exists('pf_default_attach')){
 	}
 }
 
+if (!function_exists('pf_compress_quality')) {
+    function pf_compress_quality() {
+        return apply_filters('pf_compress_quality', 75);
+    }
+}
