@@ -5,7 +5,7 @@
   "scripts": {
     "build": "cd admin && npm run build",
     "watch": "cd admin && npm run watch",
-    "link": "cd admin && npm run lint"
+    "lint": "cd admin && npm run lint"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm build && git add admin",
+      "pre-commit": "npm run lint && npm run build && git add admin",
       "pre-push": "npm run lint"
     }
   }
