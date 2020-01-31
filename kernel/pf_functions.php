@@ -150,9 +150,3 @@ if(! function_exists('pf_default_attach')){
 		return array_replace_recursive($attach_default, $attach);
 	}
 }
-
-if (!function_exists('pf_compress_quality')) {
-    function pf_compress_quality() {
-        return apply_filters('pf_compress_quality', 75);
-    }
-}

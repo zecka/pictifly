@@ -1,11 +1,11 @@
 <?php 
 function pf_configs(){
-    // DEFINE BREAKPOINT
-    
+
+    $settings = PF_Settings::getInstance();
     $configs=array(
-        'imgix'  => false,
-        'imgix_url'  => false,
-        'lazyload'  => false,
+        'imgix'  => $settings->options['imgix'],
+        'imgix_url'  => $settings->options['imgix_url'],
+        'lazyload'  => $settings->options['lazyload'],
         'breakpoints' =>array(
             'xs'  => 0,
             'sm'  => 180,
@@ -18,19 +18,16 @@ function pf_configs(){
         'resize_url'  => wp_upload_dir()['baseurl'].'/pictifly/'
     );
 
-
-
+    if(function_exists('apply_filters')){
+        $configs = apply_filters( 'pf_configs', $configs );
+    }
     // CREAT PATH IF NOT EXIST
     if (!file_exists( $configs['resize_path'] )) {
         mkdir($configs['resize_path'], 0755, true);
     }
 
-
-    if(function_exists('apply_filters')){
-		return apply_filters( 'pf_configs', $configs );
-	}else{
-		return $configs;
-	}
+	return $configs;
+	
 }
 
 ?>

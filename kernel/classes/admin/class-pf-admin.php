@@ -6,31 +6,70 @@ class PF_Admin{
         add_action('admin_menu', array($this, 'admin_menu'));
     }  
     public function admin_menu(){
-        add_menu_page(
+       add_menu_page(
             __('Pictifly', PF_SLUG),
             __('Pictifly', PF_SLUG),
             PF_CAPABILITY,
             PF_SLUG,
-            '', // Callback, leave empty
+             "", // Callback, leave empty
             'dashicons-format-gallery',
             71  // Position
         );
-        $hook = add_submenu_page(
-             PF_SLUG, // parent page
-              __('Compress images', PF_SLUG), // page title
-             __('Compress images', PF_SLUG), // menu title
-             PF_CAPABILITY, // Capability
-             PF_SLUG.'-compress',  // menu slug
-             array($this, 'compress_image') // callback
-        );
-        add_action("load-$hook", array($this, 'compress_page_load'));
+        $sub_menus = [
+            [
+                'page_title' => __('Settings', PF_SLUG),
+                'menu_title' => __('Settings', PF_SLUG),
+                'slug'       => false
+            ],
+            [
+                'page_title' => __('Regenerate images', PF_SLUG),
+                'menu_title' => __('Regenerate images', PF_SLUG),
+                'slug'       => 'regenerate'
+            ],
+            [
+                'page_title' => __('Sitemap Crawler', PF_SLUG),
+                'menu_title' => __('Sitemap Crawler', PF_SLUG),
+                'slug'       => 'crawler'
+            ],
+            [
+                'page_title' => __('Compress images', PF_SLUG),
+                'menu_title' => __('Compress images', PF_SLUG),
+                'slug'       => 'compress'
+            ],
+            [
+                'page_title' => __('Tools', PF_SLUG),
+                'menu_title' => __('Tools', PF_SLUG),
+                'slug'       => 'tools'
+            ]
+            
+        ];
+        $this->register_submenus($sub_menus);
+
+
     }
-    function compress_page_load(){
+    function register_submenus($sub_menus){
+        foreach($sub_menus as $sub){
+            $slug = "";
+            if($sub['slug']){
+                $slug = '-'.$sub['slug'];
+            }
+            $hook = add_submenu_page(
+                PF_SLUG, // PARENT
+                $sub['page_title'], // PAGE TITLE
+                $sub['menu_title'], // MENU TITLE
+                PF_CAPABILITY, // CAPABILITIES
+                PF_SLUG.$slug, // SLUG
+                array($this, 'setting_app') // CALLBACK
+            );
+            add_action("load-$hook", array($this, 'setting_page_load'));
+        }
+    }
+    function setting_page_load(){
         add_action('admin_footer', array($this, 'admin_footer'));
         add_action('admin_head', array($this, 'admin_head'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'));
     }
-    function compress_image(){
+    function setting_app(){
         echo '<div id="app"></div>';
     }
     public function admin_footer(){
@@ -47,20 +86,25 @@ class PF_Admin{
         // Read JSON file
         $json = file_get_contents(PF_PATH . '/admin/dist/asset-manifest.json');
         //Decode JSON
+        $settings = PF_Settings::getInstance();
+
+
         $assets   = json_decode($json, true);
-        $quality  = pf_compress_quality();
+        $quality  = $settings->options['compression_quality'];
         $dist_url = PF_URL . '/admin/dist/';
         wp_register_script('pf_vue_admin', $dist_url . $assets['app.js'], '', '', true);
-        
         wp_localize_script('pf_vue_admin', 'pictifly', array(
             'version'   => PF_VERSION,
+            'post_types_regenerate' => PF_Regenerate::get_post_types(),
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('pictifly_admin'),
             'distUrl' => $dist_url,
             'publicPath' => PF_URL . '/admin/public/',
             'quality'  => $quality,
-            'max_file_uploads' => ini_get('max_file_uploads')
+            'max_file_uploads' => ini_get('max_file_uploads'),
+            'options'   => $settings->options,
         ));
+        
         wp_enqueue_script('pf_vue_admin');
     }
     public function admin_head(){
@@ -110,5 +154,4 @@ class PF_Admin{
     }
     
 }
-$my_admin = new PF_Admin();
-$my_admin->run();
+

@@ -1,18 +1,15 @@
 <template>
   <component
-    :is="markup"
+    :is="theMarkup"
     :to="toData"
-    :class="classes.join(' ')"
+    :href="href"
+    :class="classes.join(' ') + ' ' + getLoadingClass()"
     @click="$emit('click')"
   >
     <span class="btn__icon" v-if="icon">
       <svgicon :icon="theIcon"></svgicon>
     </span>
-    <span
-      v-if="$slots.default"
-      class="btn__content"
-      :class="{ loading: loading }"
-    >
+    <span v-if="$slots.default" class="btn__content" :class="{ loading: loading }">
       <span class="btn__loading" v-if="loading">
         <svgicon icon="spinner" />
       </span>
@@ -32,13 +29,15 @@ export default {
     size: { required: false, default: "m" },
     color: { required: false, default: "black" },
     loading: { required: false, default: false },
+    href: { required: false, default: false },
     markup: { required: false, default: "button" },
-    to: { required: false }
+    to: { required: false },
   },
   data() {
     return {
       theIcon: this.icon,
-      classes: []
+      theMarkup: "button",
+      classes: [],
     };
   },
   computed: {
@@ -50,7 +49,7 @@ export default {
         return "";
       }
       return false;
-    }
+    },
   },
   mounted() {
     if (this.loading) {
@@ -58,9 +57,15 @@ export default {
     }
   },
   created() {
+    if (this.href !== false) {
+      this.theMarkup = "a";
+    }
     this.setClasses();
   },
   methods: {
+    getLoadingClass() {
+      return this.loading ? " loading" : "";
+    },
     setClasses() {
       const classes = [];
       classes.push("btn");
@@ -94,7 +99,7 @@ export default {
     },
     removeClass(toRemove) {
       this.classes = this.classes.filter(className => className != toRemove);
-    }
+    },
   },
   watch: {
     loading: function(loading) {
@@ -104,8 +109,8 @@ export default {
     },
     color: function() {
       this.setClasses();
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss">
@@ -118,11 +123,19 @@ export default {
   height: 2.5em;
   font-size: 1rem;
   display: inline-flex;
+  align-items: center;
   position: relative;
   border-radius: $radius;
   transition: all 0.3s;
   &:hover {
     opacity: 0.6;
+  }
+  &.outline {
+    background-color: transparent;
+  }
+  &.loading {
+    cursor: not-allowed;
+    pointer-events: none;
   }
   &.plain {
     color: $white;
@@ -193,6 +206,21 @@ export default {
     &.outline .btn__icon::before {
       border-color: $black;
       color: $black;
+    }
+  }
+  &--white {
+    &.plain {
+      color: $black;
+      background-color: $white;
+      border: none;
+      .btn__icon::before {
+        background: rgba($white, 0.2);
+      }
+    }
+    &.outline,
+    &.outline .btn__icon::before {
+      border-color: $white;
+      color: $white;
     }
   }
   &--red {

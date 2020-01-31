@@ -1,19 +1,34 @@
 <template>
   <div class="compress">
-    <ui-button @click="handleClick()" :loading="isRunning">Compress</ui-button>
-    <div>
-      <progress-bar :options="barOptions" :value="percent" />
+    <div class="compress__info pictifly__info">
+      To not have to use an external service (which will cost you money) and not to be blocked due to the limitations of your
+      hosting provider,
+      <strong>Pictifly</strong>
+      uses your browser to compress your images. This is why we advise you to perform this operation on a recent browser. Before
+      compressing your images, please download and use the
+      <a rel="noopener noreferrer" href="https://www.google.com/chrome/" target="_blank">latest version of Google Chrome</a>
+      <small
+        >Please note that you must perform this operation regularly, as your images are not compressed during upload. If you
+        configure
+        <a rel="noopener noreferrer" href="https://www.imgix.com/" target="_blank">imgix</a>
+        (paid service) in the Pictifly settings you will no longer need to manually compress your images.</small
+      >
     </div>
-    <div>{{ this.current_item }} / {{ this.post_count }}</div>
+    <ui-button @click="handleClick()" :loading="isRunning">Start Compression</ui-button>
+    <div class="compress__progress">
+      <progress-bar :options="barOptions" :value="percent" />
+      <small>{{ this.current_item }} / {{ this.post_count }}</small>
+    </div>
   </div>
 </template>
 <script>
 import ProgressBar from "vuejs-progress-bar";
-import Pictifly from "../pictifly";
 import Compressor from "compressorjs";
-const { $, ajaxUrl, nonce, quality, max_file_uploads } = Pictifly;
+import barOptions from "../components/barOptions.js";
+const $ = jQuery;
 export default {
   data() {
+    const { ajaxUrl, nonce, quality, max_file_uploads } = this.$store.state.pictifly;
     return {
       debug: 0,
       current_item: 0,
@@ -25,30 +40,30 @@ export default {
       nonce: nonce,
       ajaxUrl: ajaxUrl,
       percent: 0,
-      barOptions: this.getBarOptions()
+      barOptions: this.getBarOptions(),
     };
   },
   components: {
-    ProgressBar
+    ProgressBar,
   },
   mounted() {},
   methods: {
     handleClick() {
       if (!this.isRunning) {
+        this.current_item = 0;
         this.isRunning = true;
         this.getAttachments();
       }
     },
     getAttachments() {
-      console.log("start get");
       const data = {
         action: "pf_get_attachments",
-        nonce: nonce,
-        current_item: this.current_item
+        nonce: this.nonce,
+        current_item: this.current_item,
       };
       $.ajax({
         type: "post",
-        url: ajaxUrl,
+        url: this.ajaxUrl,
         data: data,
         error: (response, error) => {
           console.error("response", response);
@@ -58,17 +73,14 @@ export default {
           this.post_count = response.data.post_count;
           this.current_item = response.data.current_item;
           this.compressImages(response);
-        }
+        },
       });
     },
     async compressImages(response) {
       const { attachments } = response.data;
       const promises = [];
       // const blobs = [];
-      console.log("receive attachment", response);
-      console.log("Receive " + attachments.length + " attachments");
-      attachments.forEach((attachment, key) => {
-        console.log(key + "attachment have" + attachment.files.length);
+      attachments.forEach(attachment => {
         attachment.files.forEach(file => {
           promises.push(this.compressSize(file));
         });
@@ -78,8 +90,7 @@ export default {
       // PHP have a maximum file number to send in one post method
       // So we need to split our array of file into multiple array
       const filesChunks = [];
-      // const chunkMaxSize = this.max_file_uploads;
-      const chunkMaxSize = 2;
+      const chunkMaxSize = this.max_file_uploads;
 
       while (files.length > 0) {
         filesChunks.push(files.splice(0, chunkMaxSize));
@@ -88,7 +99,7 @@ export default {
       await Promise.all(
         filesChunks.map(async filesChunk => {
           await this.uploadCompressedFiles(filesChunk);
-        })
+        }),
       );
       this.nextPage();
     },
@@ -110,7 +121,7 @@ export default {
                 error(err) {
                   console.error(err);
                   resolve(false);
-                }
+                },
               });
             }
           });
@@ -143,7 +154,7 @@ export default {
           },
           success: () => {
             resolve(true);
-          }
+          },
         });
       });
     },
@@ -153,51 +164,25 @@ export default {
         this.getAttachments();
       } else {
         this.isRunning = false;
-        this.current_item = 0;
       }
     },
     getBarOptions() {
-      return {
-        text: {
-          color: "#FFFFFF",
-          shadowEnable: true,
-          shadowColor: "#000000",
-          fontSize: 20,
-          fontFamily: "Helvetica",
-          dynamicPosition: true,
-          hideText: true
-        },
-        progress: {
-          color: "#2dbd2d",
-          backgroundColor: "#ffffff"
-        },
-        layout: {
-          height: 200,
-          width: 200,
-          verticalTextAlign: 100,
-          horizontalTextAlign: 100,
-          zeroOffset: 0,
-          strokeWidth: 10,
-          progressPadding: 0,
-          type: "circle"
-        }
-      };
-    }
-  }
+      return barOptions;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
-::v-deep .progress-bar {
-  position: relative;
-  width: auto !important;
-  div {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%);
-  }
-  svg {
-    display: block;
+.compress {
+  &__progress {
+    margin: 30px 0;
+    position: relative;
+    small {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, calc(-50% + 20px));
+    }
   }
 }
 </style>

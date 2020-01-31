@@ -1,6 +1,4 @@
 var fs = require("fs");
-const svgson = require("svgson");
-var parser = require("xml2json");
 const { stringify, parseSync } = require("svgson");
 
 const icons = {};
@@ -14,10 +12,6 @@ filesName.forEach(fileName => {
 
   const key = fileName.replace(".svg", "");
 
-  /* icons[key] = {
-    data: svgson.parseSync(fileContent),
-    content: fileContent
-  }; */
   const json = parseSync(fileContent);
   const { width, height, fill, stroke, color } = json.attributes;
 
@@ -40,13 +34,12 @@ filesName.forEach(fileName => {
   if (color && color !== "none") {
     json.attributes.color = "currentColor";
   }
-  console.log(json);
   if (json.attributes["stroke-width"]) {
     json.attributes["stroke-width"] = "2";
   }
   icons[key] = {
     attributes: json.attributes,
-    content: stringify(json.children)
+    content: stringify(json.children),
   };
 });
 

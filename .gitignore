@@ -2,6 +2,7 @@
 .phpintel
 .phpintel/
 .DS_Store
+node_modules/
 .data
 !.data/scripts
 ./vendor

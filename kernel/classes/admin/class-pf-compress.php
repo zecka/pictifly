@@ -13,7 +13,7 @@ class PF_Compress{
     public static function filepath_info_for_compression($fullpath, $info=false){
         $configs     = pf_configs();
         $upload_path = $configs['resize_path'];
-
+        $settings = PF_Settings::getInstance();
         $dir      = explode('/', $fullpath);
         $filename = array_pop($dir);
         $dir      = implode('/', $dir);
@@ -21,7 +21,7 @@ class PF_Compress{
         $dir      = $upload_path . $dir . '/min/';
         $fname    = $filename;
 
-        $quality = pf_compress_quality();
+        $quality = $settings->options['compression_quality'];
         $pathinfo = pathinfo($fname);
         if (isset($pathinfo['extension'])) {
             $fname = str_replace(
@@ -68,7 +68,7 @@ class PF_Compress{
                 }
                 $current_item++;
                 $attachment_id = pf_get_id_in_default_lang(get_the_ID());
-                $array_files = pf_get_attachment_master_files($attachment_id);
+                $array_files = PF_Helper::pf_get_attachment_master_files($attachment_id);
               
                 foreach($array_files as $file){
                     $url = $configs['resize_url'].$attachment_id.'/'.$file;                   
@@ -148,6 +148,3 @@ class PF_Compress{
         wp_send_json_success(['post' => $_POST, 'files'=>$_FILES, 'myfiles' => $files]);
     }
 }
-
-$pf_compress = new PF_Compress();
-$pf_compress->run();

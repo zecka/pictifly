@@ -249,8 +249,8 @@ class PF_Image{
                     $breakpoints[$breakpoint]['min-width'] = $this->configs['breakpoints'][$breakpoint];
                 }
             }
-            $bigger_bp  = pf_get_bigger_bp($picture['breakpoints']);
-            $smaller_bp = pf_get_smaller_bp($picture['breakpoints']);
+            $bigger_bp  = PF_Helper::pf_get_bigger_bp($picture['breakpoints']);
+            $smaller_bp = PF_Helper::pf_get_smaller_bp($picture['breakpoints']);
         }else{
             if(!$picture['default_img']){
                 return null;
@@ -322,7 +322,7 @@ class PF_Image{
         </span>
 
         <?php
-        return pf_sanitize_output(ob_get_clean());
+        return PF_Helper::pf_sanitize_output(ob_get_clean());
     }
 
     public function display(){

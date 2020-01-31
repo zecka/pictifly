@@ -11,7 +11,7 @@ export default {
     icon: { required: true },
     width: { required: false, default: "1em" },
     height: { required: false, default: "1em" },
-    color: { required: false, default: "currentColor" }
+    color: { required: false, default: "currentColor" },
   },
   computed: {
     exist() {
@@ -42,7 +42,7 @@ export default {
         }
       }
       return attributes;
-    }
-  }
+    },
+  },
 };
 </script>

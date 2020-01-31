@@ -1,0 +1,31 @@
+{
+  "name": "pictifly",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "cd admin && npm run build",
+    "watch": "cd admin && npm run watch",
+    "link": "cd admin && npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zecka/pictifly.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zecka/pictifly/issues"
+  },
+  "homepage": "https://github.com/zecka/pictifly#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.0",
+    "husky": "^4.2.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm build && git add admin",
+      "pre-push": "npm run lint"
+    }
+  }
+}
