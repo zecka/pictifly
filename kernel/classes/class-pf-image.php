@@ -167,9 +167,6 @@ class PF_Image{
                             $last_breakpoint = $breakpoint->get();
                         }
                     }
-                    
-                   
-
 				}
             }else{
                $this->get_svg();
@@ -177,7 +174,7 @@ class PF_Image{
             if($this->args['width'] || $this->args['height']){
                 $default_img =  new PF_Breakpoint($this, [$this->args['width'], $this->args['height'], $this->args['crop']], 'default');
                 $this->render_array['default_img'] = $default_img->get();
-            }else{
+            }elseif($last_breakpoint){
                 $this->render_array['default_img'] = $last_breakpoint;
             }
           
@@ -195,13 +192,17 @@ class PF_Image{
         }
     }
     private function get_svg(){
-        if(!file_exists( $this->resize_folder_path.$this->pathinfo['basename'])){
-            copy($this->source_file, $this->resize_folder_path.$this->pathinfo['basename']);
-        }
+       
         if($this->configs['imgix'] && $this->configs['imgix_url']){
             $img_path = str_replace(ABSPATH, '', $this->source_file);
             $imgix_url = $this->configs['imgix_url'];
             $img_path = $imgix_url."/".$img_path;
+        }elseif(!file_exists( $this->resize_folder_path.$this->pathinfo['basename'])){
+            // Check if folder exist
+            if (!is_dir($this->resize_folder_path)) {
+                mkdir($this->resize_folder_path, 0777, true);
+            }
+            copy($this->source_file, $this->resize_folder_path.$this->pathinfo['basename']);
         }else{
             $img_path = $this->pathinfo['basename'];
         }
