@@ -165,6 +165,7 @@ class PF_Image{
 							$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
 							$this->render_array['breakpoints'][$title] = $breakpoint->get();
                             $last_breakpoint = $breakpoint->get();
+                            $this->render_array['default_img'] = $last_breakpoint
                         }
                     }
 				}
@@ -174,8 +175,6 @@ class PF_Image{
             if($this->args['width'] || $this->args['height']){
                 $default_img =  new PF_Breakpoint($this, [$this->args['width'], $this->args['height'], $this->args['crop']], 'default');
                 $this->render_array['default_img'] = $default_img->get();
-            }elseif($last_breakpoint){
-                $this->render_array['default_img'] = $last_breakpoint;
             }
           
 
