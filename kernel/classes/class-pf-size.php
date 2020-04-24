@@ -28,8 +28,7 @@ class PF_Size{
         $this->define_scale();
 		$this->define_file_name();
         $this->define_key();
-    }
-
+    }   
     private function define_dimensions(){
         if($this->breakpoint->based_on=='width'){
             $this->width = (int) ( $this->breakpoint->width * $this->retina_x);
@@ -127,7 +126,9 @@ class PF_Size{
         }
         if($this->image->args['crop']){
             if($this->scale){
-                $params[] = 'fit=clamp';
+                $params[] = 'fit=fill';
+                $params[] = 'fill=solid';
+                $params[] = 'fill-color=ffffff';
             }else{
                 $params[] = 'rect='.$this->breakpoint->x_crop.','.$this->breakpoint->y_crop.','.$this->breakpoint->width_crop.','.$this->breakpoint->height_crop;
             }

@@ -27,10 +27,17 @@ class PF_Image{
 	private $is_svg;
 	public $extension;
     public $pf_files_min;
+    private $svg_placeholder;
+
     public function __construct($id, $args){
         if(!$id){
             return false;
         }
+        $this->source_file = get_attached_file($id);
+        if (!file_exists($this->source_file)) {
+            return false;
+        }
+        $this->set_svg_placeholder();
         $this->default_breakpoint = false;
         $args_default=$this->default_args();
         $args=array_replace_recursive($args_default, $args);
@@ -38,7 +45,7 @@ class PF_Image{
         $this->args = $args;
         $this->id = $id;
         $this->default_id = pf_get_id_in_default_lang($id);
-        $this->source_file = get_attached_file( $id );
+     
         $this->pf_files_min = get_post_meta($id, 'pf_files_min', true);
         $this->pathinfo = pathinfo($this->source_file);
 
@@ -54,7 +61,8 @@ class PF_Image{
         if( $this->extension === 'svg' ){
             $this->is_svg = true;
         }else{
-			$this->is_svg = false;
+            $this->is_svg = false;
+         
             $size = getimagesize($this->source_file);
             $this->width = $size[0];
             $this->height = $size[1];
@@ -69,7 +77,12 @@ class PF_Image{
         $this->render_array = array();
 
     }
-
+    private function exist(){
+        return file_exists($this->source_file);
+    }
+    private function set_svg_placeholder(){
+        $this->svg_placeholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E";
+    }
     private function default_args(){
         $default_args =  array(
             'crop'	=> true, // true, false or "scale"
@@ -154,7 +167,7 @@ class PF_Image{
     }
 
     public function get(){
-        if(!$this->id){
+        if(!$this->id || !$this->exist()){
             return null;
         }
         try {
@@ -165,7 +178,7 @@ class PF_Image{
 							$breakpoint = new PF_Breakpoint($this, $dimensions, $title);
 							$this->render_array['breakpoints'][$title] = $breakpoint->get();
                             $last_breakpoint = $breakpoint->get();
-                            $this->render_array['default_img'] = $last_breakpoint
+                            $this->render_array['default_img'] = $last_breakpoint;
                         }
                     }
 				}
@@ -191,7 +204,9 @@ class PF_Image{
         }
     }
     private function get_svg(){
-       
+        if(!$this->id || !$this->exist()){
+            return null;
+        }
         if($this->configs['imgix'] && $this->configs['imgix_url']){
             $img_path = str_replace(ABSPATH, '', $this->source_file);
             $imgix_url = $this->configs['imgix_url'];
@@ -208,7 +223,7 @@ class PF_Image{
         $this->render_array['breakpoints']['xs']['1x'] = $img_path;
     }
     public function get_simple(){
-        if(!$this->id){
+        if (!$this->id || !$this->exist()) {
             return null;
         }
 		$picture =  $this->get();
@@ -219,7 +234,7 @@ class PF_Image{
     }
 
     public function get_html(){
-        if(!$this->id){
+        if (!$this->id || !$this->exist()) {
             return null;
         }
         $picture = $this->get();
@@ -305,7 +320,7 @@ class PF_Image{
                     if($this->configs['lazyload'] && $this->args['lazyload']){
                         ?>
                         class="lazyload<?php echo $this->args['class']; ?>"
-                        src="<?php echo $this->resize_folder_url.$smaller_bp['1x']; ?>"
+                        src="<?php echo $this->svg_placeholder; ?>"
                         data-src="<?php echo $this->resize_folder_url.$bigger_bp['1x']; ?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
@@ -326,7 +341,7 @@ class PF_Image{
     }
 
     public function display(){
-        if(!$this->id){
+        if (!$this->id || !$this->exist()) {
             return null;
         }else{
             echo $this->get_html();
@@ -346,7 +361,8 @@ class PF_Image{
     }
 
     public function background_in_img(){
-        if (!$this->id) {
+
+        if (!$this->id || !$this->exist()) {
             return null;
         }
 
@@ -366,7 +382,7 @@ class PF_Image{
     }
 
     public function background(){
-        if(!$this->id){
+        if (!$this->id || !$this->exist()) {
             return null;
         }
         ob_start();
@@ -374,7 +390,7 @@ class PF_Image{
         $background_data = wp_json_encode($this->get());
         $background_data = function_exists('wc_esc_json') ? wc_esc_json($background_data) : _wp_specialchars($background_data, ENT_QUOTES, 'UTF-8', true);
         ?>
-        op-background data-background="<?php echo $background_data ?>" style="background-image:url(<?php echo $this->get_simple(); ?>); background-size: cover; background-position:center center;" 
+        op-background data-background="<?php echo $background_data ?>" style="background-size: cover; background-position:center center;" 
         <?php
         return ob_get_clean();
     }

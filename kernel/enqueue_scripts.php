@@ -9,8 +9,8 @@ function pf_enqueue_scripts(){
     wp_register_script( 'lazysizes', PF_URL . '/assets/vendors/js/lazysizes.min.js' ,array( 'jquery'),'4.1.15', true);
 
     wp_register_script( 'pf_scripts', PF_URL . '/assets/js/op.js' ,array( 'jquery'),'4.1.15', true);
-    $pf_configs = pf_configs();
-    wp_localize_script('pf_scripts', 'pf_breakpoints', $pf_configs['breakpoints']);
+    wp_localize_script('pf_scripts', 'pf_breakpoints', $configs['breakpoints']);
+    wp_localize_script('pf_scripts', 'pf_lazyload', ['enabled'=>$configs['lazyload']]);
     
     wp_enqueue_script( 'pf_scripts' );
     if($configs['lazyload']){
