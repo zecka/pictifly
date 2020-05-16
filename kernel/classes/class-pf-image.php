@@ -217,6 +217,7 @@ class PF_Image{
                 mkdir($this->resize_folder_path, 0777, true);
             }
             copy($this->source_file, $this->resize_folder_path.$this->pathinfo['basename']);
+            $img_path = $this->pathinfo['basename'];
         }else{
             $img_path = $this->pathinfo['basename'];
         }
