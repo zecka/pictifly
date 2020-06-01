@@ -66,8 +66,8 @@ export default {
         url: this.ajaxUrl,
         data: data,
         error: (response, error) => {
-          console.error("response", response);
-          console.error("error", error);
+          console.error("response", response); // eslint-disable-line no-console
+          console.error("error", error); // eslint-disable-line no-console
         },
         success: response => {
           this.post_count = response.data.post_count;
@@ -110,7 +110,7 @@ export default {
           .then(res => res.blob()) // Gets the response and returns it as a blob
           .then(blob => {
             if (blob.type == "text/html") {
-              console.error("not image but html", file.url);
+              console.error("not image but html", file.url); // eslint-disable-line no-console
               resolve(false);
             } else {
               new Compressor(blob, {
@@ -119,7 +119,7 @@ export default {
                   resolve({ ...file, blob });
                 },
                 error(err) {
-                  console.error(err);
+                  console.error(err); // eslint-disable-line no-console
                   resolve(false);
                 },
               });
@@ -149,8 +149,8 @@ export default {
           processData: false,
           contentType: false,
           error: (response, error) => {
-            console.error("response", response);
-            console.error("error", error);
+            console.error("response", response); // eslint-disable-line no-console
+            console.error("error", error); // eslint-disable-line no-console
           },
           success: () => {
             resolve(true);
