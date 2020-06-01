@@ -64,8 +64,10 @@ class PF_Regenerate{
     public static function get_post_types(){
         $post_types = array();
         $sizes      = pf_get_all_sizes();
-        foreach ($sizes as $size) {
-            $post_types = array_unique(array_merge($post_types, $size['post_type']));
+        if(is_array($sizes)){
+            foreach ($sizes as $size) {
+                $post_types = array_unique(array_merge($post_types, $size['post_type']));
+            }
         }
         return apply_filters('pf_post_type_regenerate', $post_types);
     }

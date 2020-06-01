@@ -31,7 +31,7 @@ class Pictifly{
 		if ( defined( 'PF_VERSION' ) ) {
 			$this->version = PF_VERSION;
 		} else {
-			$this->version = '0.4.0';
+			$this->version = '0.4.5';
 		}
 		$this->plugin_name = PF_SLUG;
 
@@ -65,6 +65,7 @@ class Pictifly{
         require_once 'kernel/enqueue_scripts.php';
         require_once 'kernel/media-library/pf_keypoint_field.php';
         require_once 'kernel/media-library/wpml_support.php';
+        require_once 'kernel/plugin-compatibilty/wp-rocket-config.php';
 
     }
 
