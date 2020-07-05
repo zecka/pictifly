@@ -10,8 +10,10 @@ if(!function_exists('pf_get')){
         unset($args['lazyload']);
         unset($args['lazyload_transition']);
 		unset($args['quality']);
-		$size = pf_get_size($size_name);
-		if($size['simple']){
+        $size = pf_get_size($size_name);
+        if(!is_array($size)){
+            $default_args = false;
+        }else if($size['simple']){
 			$default_args=array(
 				'crop'	=> $size['args'][2],
 				'breakpoints'=> array(
@@ -21,8 +23,10 @@ if(!function_exists('pf_get')){
 			);
 		}else{
 			$default_args = $size['args'];
-		}
-		$args = array_merge($default_args, $args);
+        }
+        if($default_args){
+            $args = array_merge($default_args, $args);
+        }
 
 		$picture = new PF_Image($id, $args);
 
