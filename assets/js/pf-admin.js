@@ -1,4 +1,4 @@
-(function($) {
+(function ($) {
   class PFadmin {
     constructor() {
       this.init();
@@ -10,7 +10,7 @@
       });
     }
     keypoint() {
-      $(".pf_keypoint_figure").live("click", function(e) {
+      $("body").on("click", ".pf_keypoint_figure", function (e) {
         var width = $(this).width();
         var height = $(this).height();
         var posX = $(this).offset().left,
