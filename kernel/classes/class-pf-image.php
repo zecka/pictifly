@@ -284,9 +284,9 @@ class PF_Image{
         $nb_breakpoints = count($breakpoints);
         ob_start();
         ?>
-
-        <span class="<?php echo implode(" ", $figure_classes) ?>">
-
+        <?php if($this->configs['wrap']): ?>
+        <<?php echo $this->configs['wrap']; ?> class="<?php echo implode(" ", $figure_classes) ?>">
+        <?php endif ?>
             <?php if($nb_breakpoints > 1): ?>
                 <picture>
             <?php endif; ?>
@@ -335,8 +335,9 @@ class PF_Image{
             <?php if ($nb_breakpoints > 1): ?>
                 </picture>
             <?php endif;?>
-        </span>
-
+        <?php if($this->configs['wrap']): ?>
+        </<?php echo $this->configs['wrap']; ?>>
+        <?php endif; ?>
         <?php
         return PF_Helper::pf_sanitize_output(ob_get_clean());
     }

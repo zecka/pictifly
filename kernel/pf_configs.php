@@ -3,9 +3,10 @@ function pf_configs(){
 
     $settings = PF_Settings::getInstance();
     $configs=array(
-        'imgix'  => $settings->options['imgix'],
+        'imgix'      => $settings->options['imgix'],
         'imgix_url'  => $settings->options['imgix_url'],
-        'lazyload'  => $settings->options['lazyload'],
+        'lazyload'   => $settings->options['lazyload'],
+        'wrap'       => 'span',
         'breakpoints' =>array(
             'xs'  => 0,
             'sm'  => 180,
