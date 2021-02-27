@@ -10,7 +10,7 @@
     "icons": "node ./generate-icons.js"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "compressorjs": "^1.0.6",
     "core-js": "^3.6.5",
     "node-sass-json-importer": "^4.3.0",
