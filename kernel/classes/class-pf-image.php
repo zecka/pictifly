@@ -254,7 +254,7 @@ class PF_Image{
         $breakpoints  = array();
         
         
-        if(is_array($picture['breakpoints'])){
+        if($picture && is_array($picture['breakpoints'])){
             foreach( array_reverse( $picture['breakpoints'] ) as $breakpoint=>$sizes){
                 $srcset=array();
                 foreach($sizes as $size=>$filename){
@@ -268,7 +268,7 @@ class PF_Image{
             $bigger_bp  = PF_Helper::pf_get_bigger_bp($picture['breakpoints']);
             $smaller_bp = PF_Helper::pf_get_smaller_bp($picture['breakpoints']);
         }else{
-            if(!$picture['default_img']){
+            if(!$picture || $picture['default_img']){
                 return null;
             }
             $bigger_bp  = $picture['default_img'];
