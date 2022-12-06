@@ -14,7 +14,7 @@
     "compressorjs": "^1.0.6",
     "core-js": "^3.6.5",
     "node-sass-json-importer": "^4.3.0",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "svgson": "^4.1.0",
     "vue": "^2.6.10",
     "vue-embed-gist": "^1.0.2",
