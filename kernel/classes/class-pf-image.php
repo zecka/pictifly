@@ -64,6 +64,10 @@ class PF_Image{
             $this->is_svg = false;
          
             $size = getimagesize($this->source_file);
+            if(!$size){
+                error_log("Image doesn't have size, maybe an unuportted format or an corrupted image file. image id: $id");
+                return false;
+            }
             $this->width = $size[0];
             $this->height = $size[1];
             $this->mime_type = $size['mime'];
@@ -322,7 +326,7 @@ class PF_Image{
                         ?>
                         class="lazyload<?php echo $this->args['class']; ?>"
                         src="<?php echo $this->svg_placeholder; ?>"
-                        data-src="<?php echo $this->resize_folder_url.$bigger_bp['1x']; ?>"
+                        data-src="<?php echo $bigger_bp ? $this->resize_folder_url.$bigger_bp['1x']  : ''; ?>"
                     <?php }else{ ?>
                         class="pf_picture_img<?php echo $this->args['class']; ?>"
                         src="<?php echo $this->resize_folder_url.$bigger_bp['1x']; ?>"
