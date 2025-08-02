@@ -132,7 +132,7 @@ class PF_Size {
             }
         }
         $params = apply_filters('pf_imgix_params', $params, $this->image, $this->breakpoint, $this->retina_x);
-        $final_url =  $imgix_url . implode("&", $params);
+        $final_url =  $imgix_url . apply_filters('pf_imgix_params_string', implode('&', $params), $this->image, $this->breakpoint, $this->retina_x);
         return apply_filters('pf_imgix_final_url', $final_url, $this->image, $this->breakpoint, $this->retina_x);
     }
     private function generate_img() {
