@@ -133,7 +133,8 @@ class PF_Size{
                 $params[] = 'rect='.$this->breakpoint->x_crop.','.$this->breakpoint->y_crop.','.$this->breakpoint->width_crop.','.$this->breakpoint->height_crop;
             }
         }
-        return $imgix_url .implode("&", $params);
+        $final_url =  $imgix_url .implode("&", $params);
+        return apply_filters('pf_imgix_final_url', $final_url, $this->image, $this->breakpoint, $this->retina_x);
     }
     private function generate_img(){
 		set_time_limit(0);
